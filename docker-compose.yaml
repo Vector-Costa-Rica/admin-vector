@@ -25,26 +25,6 @@ services:
     networks:
       - laravel-network
 
-  # MySQL Service
-  db:
-    image: mysql:8.0
-    container_name: laravel-db
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
-    volumes:
-      - dbdata:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    networks:
-      - laravel-network
-
 networks:
   laravel-network:
     driver: bridge
-
-volumes:
-  dbdata:
