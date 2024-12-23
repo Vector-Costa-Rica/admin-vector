@@ -22,10 +22,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Configurar directorio de trabajo
 WORKDIR /var/www/html
 
-# Crear directorios necesarios y configurar permisos
+# Crear directorios necesarios
 RUN mkdir -p /var/log/nginx \
     /var/log/supervisor \
     /var/run/supervisor \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/framework/sessions \
+    bootstrap/cache \
     && chown -R www-data:www-data /var/log/nginx \
     && chown -R www-data:www-data /var/log/supervisor \
     && chown -R www-data:www-data /var/run/supervisor
@@ -42,20 +46,23 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     /usr/local/bin/handle-migrations.sh \
     /usr/local/bin/optimize.sh
 
-# Copiar toda la aplicación
+# Copiar archivos de la aplicación
 COPY . .
+
+# Copiar .env.example a .env si no existe .env
+COPY .env.example .env
 
 # Establecer permisos
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 storage bootstrap/cache
 
+# Generar clave de la aplicación
+RUN php artisan key:generate --force
+
 # Instalar dependencias y optimizar
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
-    && php artisan config:clear \
-    && php artisan cache:clear \
-    && php artisan route:clear \
-    && php artisan view:clear \
+    && php artisan storage:link \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
