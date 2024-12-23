@@ -1,18 +1,18 @@
 #!/bin/sh
 set -e
 
-# En producción, solo instalar dependencias si es necesario
-if [ ! -d "vendor" ]; then
-    echo "Instalando dependencias de producción..."
-    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+# Verificar si estamos en primera ejecución
+if [ ! -f ".env" ]; then
+    echo "Creando archivo .env..."
+    cp .env.example .env
 fi
 
-# Generar key de Laravel si no existe
+# Generar key si no existe
 php artisan key:generate --force
 
-# Configurar permisos de storage
+# Establecer permisos
 chmod -R 775 storage bootstrap/cache
-chown -R nobody:nobody storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
 
 # Ejecutar optimizaciones de producción
 /usr/local/bin/optimize.sh

@@ -2,9 +2,8 @@
 FROM php:8.2-fpm-alpine
 
 # Instalar dependencias necesarias
+# Instalar dependencias necesarias
 RUN apk add --no-cache \
-    php82 \
-    php82-fpm \
     php82-pdo \
     php82-pdo_mysql \
     php82-mbstring \
@@ -23,27 +22,30 @@ RUN apk add --no-cache \
     php82-iconv \
     nginx \
     curl \
-    supervisor
+    supervisor \
+    $PHPIZE_DEPS
+
+# Instalar extensiones PHP necesarias
+RUN docker-php-ext-install pdo pdo_mysql
 
 # Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Crear enlaces simbólicos para PHP
-RUN ln -s /usr/bin/php82 /usr/bin/php
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar composer.json y composer.lock primero para aprovechar la caché de Docker
+# Copiar composer.json y composer.lock primero
 COPY composer.json composer.lock ./
 
-# Instalar dependencias de producción
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-# Copiar el resto de los archivos de la aplicación
+# Copiar el resto de la aplicación
 COPY . .
 
-# Copiar scripts
+# Establecer permisos
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 storage bootstrap/cache
+
+# Scripts de inicio y optimización
 COPY docker/scripts/entrypoint.sh /usr/local/bin/
 COPY docker/scripts/handle-migrations.sh /usr/local/bin/
 COPY docker/scripts/optimize.sh /usr/local/bin/
@@ -53,8 +55,15 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     /usr/local/bin/handle-migrations.sh \
     /usr/local/bin/optimize.sh
 
-# Configurar permisos
-RUN chown -R nobody:nobody /var/www/html \
-    && chmod -R 755 /var/www/html/storage
+# Instalar dependencias y optimizar
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+    && php artisan config:clear \
+    && php artisan cache:clear \
+    && php artisan route:clear \
+    && php artisan view:clear \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && composer dump-autoload --optimize --no-dev
 
 ENTRYPOINT ["entrypoint.sh"]
