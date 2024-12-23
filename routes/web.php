@@ -13,7 +13,6 @@ use App\Http\Controllers\{AssetsController,
     ProjectStatesController,
     ProposalsController,
     CustomAssetsController,
-    SAMLController,
     ServicesController,
     StatesController,
     TechDocsController,
@@ -24,11 +23,6 @@ use App\Http\Controllers\{AssetsController,
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::middleware(['web'])->group(function () {
-    Route::get('saml/login', [SAMLController::class, 'login']);
-    Route::post('saml/acs', [SAMLController::class, 'acs']);
 });
 
 // Deshabilitar rutas de autenticación tradicional excepto logout
