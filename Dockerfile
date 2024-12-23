@@ -52,11 +52,14 @@ COPY config ./config
 COPY bootstrap ./bootstrap
 COPY app ./app
 
-# Instalar dependencias
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+# Instalar dependencias sin ejecutar scripts
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 # Copiar el resto de la aplicación
 COPY . .
+
+# Ahora sí ejecutar los scripts de composer
+RUN composer run-script post-autoload-dump
 
 # Copiar .env.example a .env
 COPY .env.example .env
