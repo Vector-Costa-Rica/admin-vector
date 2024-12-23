@@ -46,10 +46,16 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     /usr/local/bin/handle-migrations.sh \
     /usr/local/bin/optimize.sh
 
-# Copiar archivos de la aplicación
+# Copiar composer.json y composer.lock
+COPY composer.json composer.lock ./
+
+# Instalar dependencias
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+# Copiar el resto de la aplicación
 COPY . .
 
-# Copiar .env.example a .env si no existe .env
+# Copiar .env.example a .env
 COPY .env.example .env
 
 # Establecer permisos
@@ -57,11 +63,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 storage bootstrap/cache
 
-# Generar clave de la aplicación
-RUN php artisan key:generate --force
-
-# Instalar dependencias y optimizar
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+# Generar clave y optimizar
+RUN php artisan key:generate --force \
     && php artisan storage:link \
     && php artisan config:cache \
     && php artisan route:cache \
