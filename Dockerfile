@@ -46,8 +46,11 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     /usr/local/bin/handle-migrations.sh \
     /usr/local/bin/optimize.sh
 
-# Copiar composer.json y composer.lock
-COPY composer.json composer.lock ./
+# Copiar archivos esenciales de Laravel primero
+COPY composer.json composer.lock artisan ./
+COPY config ./config
+COPY bootstrap ./bootstrap
+COPY app ./app
 
 # Instalar dependencias
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
