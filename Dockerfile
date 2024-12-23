@@ -5,14 +5,12 @@ FROM php:8.2-fpm-alpine
 RUN apk add --no-cache \
     nginx \
     supervisor \
-    # PHP Extensions
     postgresql-dev \
     libpng-dev \
     libzip-dev \
     zip \
     unzip \
     git \
-    # Build dependencies
     $PHPIZE_DEPS
 
 # Instalar y configurar extensiones PHP
@@ -24,7 +22,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Configurar directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar archivos de configuración primero
+# Crear directorios necesarios y configurar permisos
+RUN mkdir -p /var/log/nginx \
+    /var/log/supervisor \
+    /var/run/supervisor \
+    && chown -R www-data:www-data /var/log/nginx \
+    && chown -R www-data:www-data /var/log/supervisor \
+    && chown -R www-data:www-data /var/run/supervisor
+
+# Copiar archivos de configuración
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/scripts/entrypoint.sh /usr/local/bin/
@@ -36,21 +42,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     /usr/local/bin/handle-migrations.sh \
     /usr/local/bin/optimize.sh
 
-# Crear directorios necesarios y configurar permisos
-RUN mkdir -p /var/log/nginx \
-    /var/log/supervisor \
-    /var/run/supervisor \
-    && chown -R www-data:www-data /var/log/nginx \
-    && chown -R www-data:www-data /var/log/supervisor \
-    && chown -R www-data:www-data /var/run/supervisor
-
-# Copiar composer.json y composer.lock primero para aprovechar la caché de Docker
-COPY composer.json composer.lock ./
-
-# Instalar dependencias de producción
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-# Copiar el resto de la aplicación
+# Copiar toda la aplicación
 COPY . .
 
 # Establecer permisos
@@ -58,8 +50,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 storage bootstrap/cache
 
-# Optimizar para producción
-RUN php artisan config:clear \
+# Instalar dependencias y optimizar
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+    && php artisan config:clear \
     && php artisan cache:clear \
     && php artisan route:clear \
     && php artisan view:clear \
