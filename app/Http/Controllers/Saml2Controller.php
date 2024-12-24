@@ -19,7 +19,19 @@ use OneLogin\Saml2\Error;
 
 class Saml2Controller extends Controller
 {
-    protected function getSaml2Auth(): OneLogin_Saml2_Auth
+
+    public function login(Request $request): Application|string|Redirector|RedirectResponse|null
+    {
+        try {
+            $auth = $this->getSaml2Auth();
+            return $auth->login(route('home'));
+        } catch (Exception $e) {
+            Log::error('SAML Login Error: ' . $e->getMessage());
+            return redirect('/')->with('error', 'Error iniciando sesión.');
+        }
+    }
+
+    /*protected function getSaml2Auth(): OneLogin_Saml2_Auth
     {
         try {
             Log::debug('Intentando inicializar SAML2Auth');
@@ -85,109 +97,65 @@ class Saml2Controller extends Controller
             ]);
             throw $e;
         }
-    }
+    }*/
 
-    public function login(): Application|string|Redirector|RedirectResponse|null
+
+
+
+    public function acs(Request $request): Application|Redirector|RedirectResponse
     {
         try {
-            $auth = $this->getSaml2Auth();
-            return $auth->login(route('home'));
-        } catch (Exception $e) {
-            Log::error('SAML Login Error: ' . $e->getMessage());
-            return redirect('/')->with('error', 'Error iniciando sesión.');
-        }
-    }
-
-
-    public function acs(Request $request): Response
-    {
-        try {
-            Log::info('ACS: Iniciando procesamiento de respuesta SAML', [
-                'request_method' => $request->method(),
-                'saml_response' => $request->get('SAMLResponse') ? 'present' : 'missing'
-            ]);
-
-            // Iniciar sesión manualmente
-            if (!$request->hasSession()) {
-                $request->session()->start();
+            if (!$request->has('SAMLResponse')) {
+                throw new Exception('No se recibió respuesta SAML');
             }
 
             $auth = $this->getSaml2Auth();
-
-            // Procesar la respuesta SAML
             $auth->processResponse();
 
             if (!$auth->isAuthenticated()) {
                 throw new Exception('No autenticado después del SSO');
             }
 
-            // Obtener los atributos del usuario
             $attributes = $auth->getAttributes();
+            $email = $auth->getNameId();
 
-            Log::info('SAML Attributes:', $attributes);
-
-            // Obtener el correo electrónico
-            $email = $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'][0] ?? null;
-            if (!$email) {
-                throw new Exception('No se pudo obtener el correo electrónico');
-            }
-
-            // Verificar dominio vectorcr.com
             if (!str_ends_with($email, '@vectorcr.com')) {
                 throw new Exception('Solo se permite el acceso con correo de Vector');
             }
 
-            // Obtener o crear el usuario
+            $name = $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'][0] ??
+                explode('@', $email)[0];
+
             $user = User::updateOrCreate(
                 ['email' => $email],
-                [
-                    'name' => $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0] ?? explode('@', $email)[0],
-                    'email' => $email,
-                ]
+                ['name' => $name]
             );
 
-            // Autenticar al usuario
             Auth::login($user);
 
-            // Regenerar la sesión
+            // Regenerar la sesión después del login
             $request->session()->regenerate();
 
-            Log::info('Usuario autenticado exitosamente', ['email' => $email]);
-
-            // Redireccionar usando JavaScript
-            return response()->view('saml.callback', [
-                'redirectUrl' => route('home')
-            ]);
-
+            return redirect()->intended(route('home'));
         } catch (Exception $e) {
-            Log::error('SAML ACS Error: ' . $e->getMessage());
-
-            // Redireccionar usando JavaScript en caso de error
-            return response()->view('saml.callback', [
-                'redirectUrl' => route('welcome'),
-                'error' => 'Error en la autenticación: ' . $e->getMessage()
+            Log::error('SAML ACS Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'attributes' => $attributes ?? null
             ]);
+            return redirect('/')->with('error', 'Error en la autenticación: ' . $e->getMessage());
         }
     }
 
-    public function logout(): Application|string|Redirector|RedirectResponse|null
+    public function logout(Request $request): Application|string|Redirector|RedirectResponse|null
     {
-        try {
-            $user = Auth::user();
-            $email = $user ? $user->email : 'Unknown';
-
-            Auth::logout();
-            session()->invalidate();
-            session()->regenerateToken();
-
+        if (Auth::check()) {
             $auth = $this->getSaml2Auth();
-            Log::info("Usuario {$email} ha cerrado sesión");
-
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
             return $auth->logout(route('welcome'));
-        } catch (Exception $e) {
-            Log::error('SAML2 Logout Error: ' . $e->getMessage());
-            return redirect('/');
         }
+        return redirect('/');
     }
 
     public function metadata(): Application|Response|ResponseFactory
@@ -202,5 +170,13 @@ class Saml2Controller extends Controller
             Log::error('SAML2 Metadata Error: ' . $e->getMessage());
             return response('Error generating metadata', 500);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function getSaml2Auth(): Saml2Auth
+    {
+        return new Saml2Auth(Saml2Auth::loadOneLoginAuthFromIpdConfig('vectoradminapp'));
     }
 }

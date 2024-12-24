@@ -28,18 +28,14 @@ use App\Http\Controllers\{AssetsController,
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::prefix('auth/saml2')->group(function () {
     Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
 
     Route::post('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs')
-        ->withoutMiddleware([
-            \App\Http\Middleware\VerifyCsrfToken::class,
-            StartSession::class,
-            EncryptCookies::class
-        ]);
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Solo quitamos el CSRF
 
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
 });
