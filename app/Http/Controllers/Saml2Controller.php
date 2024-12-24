@@ -31,7 +31,7 @@ class Saml2Controller extends Controller
         }
     }
 
-    /*protected function getSaml2Auth(): OneLogin_Saml2_Auth
+    protected function getSaml2Auth(): OneLogin_Saml2_Auth
     {
         try {
             Log::debug('Intentando inicializar SAML2Auth');
@@ -97,7 +97,7 @@ class Saml2Controller extends Controller
             ]);
             throw $e;
         }
-    }*/
+    }
 
 
 
@@ -170,13 +170,5 @@ class Saml2Controller extends Controller
             Log::error('SAML2 Metadata Error: ' . $e->getMessage());
             return response('Error generating metadata', 500);
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function getSaml2Auth(): Saml2Auth
-    {
-        return new Saml2Auth(Saml2Auth::loadOneLoginAuthFromIpdConfig('vectoradminapp'));
     }
 }
