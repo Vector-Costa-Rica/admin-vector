@@ -13,6 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'saml2/acs',
-        'auth/saml2/callback'
+        'auth/saml2/callback',
     ];
 }
