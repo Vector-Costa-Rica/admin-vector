@@ -35,16 +35,6 @@ Route::prefix('auth/saml2')->group(function () {
 
     Route::post('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-
-    Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
-});
-
-/*Route::prefix('auth/saml2')->group(function () {
-    Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
-
-    Route::post('callback', [Saml2Controller::class, 'acs'])
-        ->name('saml2.acs')
         ->withoutMiddleware([
             \App\Http\Middleware\VerifyCsrfToken::class,
             StartSession::class,
@@ -52,7 +42,7 @@ Route::prefix('auth/saml2')->group(function () {
         ]);
 
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
-});*/
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');

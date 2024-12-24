@@ -98,59 +98,8 @@ class Saml2Controller extends Controller
         }
     }
 
-    public function acs(Request $request): RedirectResponse
-    {
-        try {
-            Log::info('ACS: Recibiendo respuesta SAML', [
-                'method' => $request->method(),
-                'has_saml_response' => $request->has('SAMLResponse')
-            ]);
 
-            $auth = $this->getSaml2Auth();
-            $auth->processResponse();
-
-            if (!$auth->isAuthenticated()) {
-                Log::error('SAML: Usuario no autenticado después de procesar respuesta');
-                return redirect()->route('welcome')->with('error', 'No se pudo autenticar');
-            }
-
-            $attributes = $auth->getAttributes();
-            $email = $auth->getNameId();
-
-            if (!str_ends_with($email, '@vectorcr.com')) {
-                Log::warning("SAML: Intento de acceso con correo no autorizado: {$email}");
-                return redirect()->route('welcome')
-                    ->with('error', 'Solo se permite el acceso con correo de Vector.');
-            }
-
-            // Obtener nombre del usuario
-            $name = $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0] ??
-                $attributes['givenname'][0] ??
-                explode('@', $email)[0];
-
-            $user = User::updateOrCreate(
-                ['email' => $email],
-                ['name' => $name]
-            );
-
-            Auth::login($user);
-
-            // Regenerar la sesión después de iniciar sesión
-            $request->session()->regenerate();
-
-            Log::info("SAML: Usuario {$email} autenticado exitosamente");
-
-            // Redirigir inmediatamente al home
-            return redirect()->intended(route('home'));
-
-        } catch (\Exception $e) {
-            Log::error('SAML ACS Error: ' . $e->getMessage());
-            return redirect()->route('welcome')
-                ->with('error', 'Error procesando la autenticación.');
-        }
-    }
-
-    /*public function acs(Request $request): Response
+    public function acs(Request $request): Response
     {
         try {
             Log::info('ACS: Iniciando procesamiento de respuesta SAML', [
@@ -219,7 +168,7 @@ class Saml2Controller extends Controller
                 'error' => 'Error en la autenticación: ' . $e->getMessage()
             ]);
         }
-    }*/
+    }
 
     public function logout(): Application|string|Redirector|RedirectResponse|null
     {
