@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true), // Temporalmente true para ver más detalles
+    //'debug' => env('APP_DEBUG', false),
     'strict' => false,
 
     // Configuración específica para nuestra aplicación
@@ -53,6 +54,9 @@ IuEf0X2C6FepWsLZbYqu
             'wantAssertionsSigned' => false,
             'wantNameIdEncrypted' => false,
             'requestedAuthnContext' => true,
+            'wantXMLValidation' => true,
+            'relaxDestinationValidation' => true,  // Agregar esto para ser más permisivo con las URLs
+            'destinationStrictlyMatches' => false  // Y esto también
         ],
     ]
 ];

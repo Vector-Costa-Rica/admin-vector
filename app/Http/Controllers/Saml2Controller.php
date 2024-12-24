@@ -102,12 +102,16 @@ class Saml2Controller extends Controller
     public function acs(Request $request)
     {
         try {
-            Log::debug('Procesando respuesta ACS SAML', ['request' => $request->all()]);
+            Log::debug('ACS: Iniciando procesamiento de respuesta SAML', [
+                'method' => $request->method(),
+                'input' => $request->all()
+            ]);
 
             $auth = $this->getSaml2Auth();
             $auth->processResponse();
 
             if (!$auth->isAuthenticated()) {
+                Log::error('ACS: Usuario no autenticado después de procesar respuesta SAML');
                 throw new Exception('No autenticado después del SSO');
             }
 
@@ -139,7 +143,9 @@ class Saml2Controller extends Controller
 
             return redirect()->intended(route('home'));
         } catch (Exception $e) {
-            Log::error('SAML2 ACS Error: ' . $e->getMessage());
+            Log::error('ACS Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect('/')->with('error', 'Error procesando la respuesta de autenticación.');
         }
     }
