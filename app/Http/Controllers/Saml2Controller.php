@@ -20,7 +20,7 @@ use OneLogin\Saml2\Error;
 class Saml2Controller extends Controller
 {
 
-    public function login(Request $request): Application|string|Redirector|RedirectResponse|null
+    /*public function login(Request $request): Application|string|Redirector|RedirectResponse|null
     {
         try {
             $auth = $this->getSaml2Auth();
@@ -28,6 +28,28 @@ class Saml2Controller extends Controller
         } catch (Exception $e) {
             Log::error('SAML Login Error: ' . $e->getMessage());
             return redirect('/')->with('error', 'Error iniciando sesión.');
+        }
+    }*/
+
+    public function login()
+    {
+        try {
+            $auth = $this->getSaml2Auth();
+
+            // Generar la URL de callback con el token CSRF
+            $callbackUrl = url('/auth/saml2/callback') . '?_token=' . csrf_token();
+
+            // Guardar la URL original del callback
+            $originalCallback = config('saml2_settings.vectoradminapp.sp.assertionConsumerService.url');
+
+            // Temporalmente modificar la URL del callback en la configuración
+            config(['saml2_settings.vectoradminapp.sp.assertionConsumerService.url' => $callbackUrl]);
+
+            // Iniciar el proceso de login
+            return $auth->login(route('home'));
+        } catch (Exception $e) {
+            Log::error('SAML2 Login Error: ' . $e->getMessage());
+            return redirect('/')->with('error', 'Error iniciando sesión. Por favor intente de nuevo.');
         }
     }
 
