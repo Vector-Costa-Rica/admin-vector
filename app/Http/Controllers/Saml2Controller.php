@@ -46,7 +46,10 @@ class Saml2Controller extends Controller
             config(['saml2_settings.vectoradminapp.sp.assertionConsumerService.url' => $callbackUrl]);
 
             // Iniciar el proceso de login
-            return $auth->login(route('home'));
+            //return $auth->login(route('home'));
+            $auth->login(route('home'));
+            return redirect()->route('home');
+
         } catch (Exception $e) {
             Log::error('SAML2 Login Error: ' . $e->getMessage());
             return redirect('/')->with('error', 'Error iniciando sesión. Por favor intente de nuevo.');
