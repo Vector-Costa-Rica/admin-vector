@@ -28,16 +28,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::prefix('saml2')->group(function () {
+Route::prefix('auth/saml2')->group(function () {
     Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
-    Route::post('acs', [Saml2Controller::class, 'acs'])->name('saml2.acs');
+    Route::post('callback', [Saml2Controller::class, 'acs'])->name('saml2.acs');
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
-
-    // Agregar la ruta del metadata que el paquete está buscando
-  //  Route::get('/metadata', [Saml2Controller::class, 'metadata'])->name('saml2_metadata');
-
-    // También agregar la ruta sin el prefijo por si acaso
-    Route::get('metadata', [Saml2Controller::class, 'metadata'])->name('saml2.metadata');
 });
 
 Route::middleware('auth')->group(function () {

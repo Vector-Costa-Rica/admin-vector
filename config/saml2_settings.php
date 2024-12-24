@@ -9,10 +9,10 @@ return [
         'sp' => [
             'entityId' => 'https://vectoradminapp.vectorcr.com',
             'assertionConsumerService' => [
-                'url' => 'https://vectoradminapp.vectorcr.com/saml2/acs',
+                'url' => 'https://vectoradminapp.vectorcr.com/auth/saml2/callback',  // Actualizada esta URL
             ],
             'singleLogoutService' => [
-                'url' => 'https://vectoradminapp.vectorcr.com/saml2/logout',
+                'url' => 'https://vectoradminapp.vectorcr.com/auth/saml2/logout',    // También actualizada para mantener consistencia
             ],
             'NameIDFormat' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
             'x509cert' => '',

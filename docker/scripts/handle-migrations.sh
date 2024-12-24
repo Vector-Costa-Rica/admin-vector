@@ -29,20 +29,6 @@ if [ -z "$TABLES_COUNT" ] || [ "$TABLES_COUNT" -eq "0" ]; then
     # Como la base de datos está vacía, es seguro ejecutar todas las migraciones
     php artisan migrate --force
     echo "Migraciones iniciales completadas."
-
-    # Crear las tablas de caché específicamente si no existen
-  #  if ! php artisan schema:table cache > /dev/null 2>&1; then
-  #      echo "Creando tablas de caché..."
-  #      php artisan cache:table
-  #      php artisan migrate --force
-  #  fi
-
-    # Crear las tablas de sesiones si no existen
-  #  if ! php artisan schema:table sessions > /dev/null 2>&1; then
-  #      echo "Creando tablas de sesiones..."
-  #      php artisan session:table
-  #      php artisan migrate --force
-  #  fi
 else
     echo "Base de datos existente, verificando migraciones pendientes..."
 
