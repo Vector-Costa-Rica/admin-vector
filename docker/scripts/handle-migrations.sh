@@ -36,6 +36,7 @@ if [ -z "$TABLES_COUNT" ] || [ "$TABLES_COUNT" -eq "0" ]; then
   #      php artisan cache:table
   #      php artisan migrate --force
   #  fi
+  #
 
     # Crear las tablas de sesiones si no existen
   #  if ! php artisan schema:table sessions > /dev/null 2>&1; then
