@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
 
+# Crear directorios de logs si no existen
+mkdir -p /var/log/nginx
+mkdir -p /var/log/php-fpm
+mkdir -p /var/log/supervisor
+
+# Establecer permisos de logs
+chown -R www-data:www-data /var/log/nginx
+chown -R www-data:www-data /var/log/php-fpm
+chmod -R 755 /var/log/nginx
+chmod -R 755 /var/log/php-fpm
+
 # Crear .env si no existe
 if [ ! -f ".env" ]; then
     echo "Creando archivo .env..."

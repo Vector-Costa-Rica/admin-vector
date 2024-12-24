@@ -34,6 +34,10 @@ RUN mkdir -p /var/log/nginx \
     && chown -R www-data:www-data /var/log/supervisor \
     && chown -R www-data:www-data /var/run/supervisor
 
+# Configurar PHP-FPM
+COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
+
 # Copiar archivos de configuración
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
