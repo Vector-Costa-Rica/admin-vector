@@ -1,24 +1,32 @@
 <?php
-return $settings = [
+
+return [
     'debug' => env('APP_DEBUG', false),
-    'sp' => [
-        'entityId' => env('SAML2_SP_ENTITY_ID'),
-        'NameIDFormat' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-        'x509cert' => '',
-        'privateKey' => '',
-        'assertionConsumerService' => [
-            'url' => env('SAML2_SP_ACS_URL'),
+    'strict' => false,
+
+    // Configuración específica para nuestra aplicación
+    'vectoradminapp' => [
+        'sp' => [
+            'entityId' => 'https://vectoradminapp.vectorcr.com',
+            'assertionConsumerService' => [
+                'url' => 'https://vectoradminapp.vectorcr.com/saml2/acs',
+            ],
+            'singleLogoutService' => [
+                'url' => 'https://vectoradminapp.vectorcr.com/saml2/logout',
+            ],
+            'NameIDFormat' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+            'x509cert' => '',
+            'privateKey' => '',
         ],
-    ],
-    'idp' => [
-        'entityId' => env('SAML2_IDP_ENTITY_ID'),
-        'singleSignOnService' => [
-            'url' => env('SAML2_IDP_LOGIN_URL'),
-        ],
-        'singleLogoutService' => [
-            'url' => env('SAML2_IDP_LOGOUT_URL'),
-        ],
-        'x509cert' => '-----BEGIN CERTIFICATE-----
+        'idp' => [
+            'entityId' => 'https://sts.windows.net/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/',
+            'singleSignOnService' => [
+                'url' => 'https://login.microsoftonline.com/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/saml2',
+            ],
+            'singleLogoutService' => [
+                'url' => 'https://login.microsoftonline.com/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/saml2',
+            ],
+            'x509cert' => '-----BEGIN CERTIFICATE-----
 MIIC8DCCAdigAwIBAgIQaeAcGWDZnIpIRF1VI+JVIDANBgkqhkiG9w0BAQsFADA0MTIwMAYDVQQD
 EylNaWNyb3NvZnQgQXp1cmUgRmVkZXJhdGVkIFNTTyBDZXJ0aWZpY2F0ZTAeFw0yNDEyMDkwMTIy
 MDBaFw0yNzEyMDkwMTIyMDBaMDQxMjAwBgNVBAMTKU1pY3Jvc29mdCBBenVyZSBGZWRlcmF0ZWQg
@@ -34,5 +42,17 @@ uwILhf/RHSGdrveEvq5QHUXGlXPqkaryxEVQBknPz+I0tuNRB3hgSclbXTD6lnhM8xxHCafB5fBN
 govjfrNSECN7e/UeUNZosMs2cg5HQxYQG0jtWPHS9wM3sweVqsDbQZ/Y5Su98jESRlIecPksQcZB
 IuEf0X2C6FepWsLZbYqu
 -----END CERTIFICATE-----',
-    ],
+        ],
+        'security' => [
+            'nameIdEncrypted' => false,
+            'authnRequestsSigned' => false,
+            'logoutRequestSigned' => false,
+            'logoutResponseSigned' => false,
+            'signMetadata' => false,
+            'wantMessagesSigned' => false,
+            'wantAssertionsSigned' => false,
+            'wantNameIdEncrypted' => false,
+            'requestedAuthnContext' => true,
+        ],
+    ]
 ];

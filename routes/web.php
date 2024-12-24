@@ -1,5 +1,6 @@
 <?php
 
+use Aacotroneo\Saml2\Saml2Auth;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AssetsController,
@@ -31,6 +32,12 @@ Route::prefix('saml2')->group(function () {
     Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
     Route::post('acs', [Saml2Controller::class, 'acs'])->name('saml2.acs');
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
+
+    // Agregar la ruta del metadata que el paquete está buscando
+  //  Route::get('/metadata', [Saml2Controller::class, 'metadata'])->name('saml2_metadata');
+
+    // También agregar la ruta sin el prefijo por si acaso
+    Route::get('metadata', [Saml2Controller::class, 'metadata'])->name('saml2.metadata');
 });
 
 Route::middleware('auth')->group(function () {
@@ -104,7 +111,8 @@ Route::get('/states/by-country/{country}', [StatesController::class, 'getByCount
 //Cities
 Route::resource('cities', CitiesController::class);
 Route::get('/cities/by-state/{state}', [CitiesController::class, 'getByState'])->name('cities.by-state');
-Route::get('/cities/get/{id}', 'CitiesController@getById')->name('cities.getById');
+Route::get('cities/get/{id}', [CitiesController::class, 'getById'])->name('cities.getById');
+//Route::get('/cities/get/{id}', 'CitiesController@getById')->name('cities.getById');
 
 //Clients
 Route::resource('clients', ClientsController::class);

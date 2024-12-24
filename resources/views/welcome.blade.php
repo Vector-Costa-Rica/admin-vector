@@ -233,6 +233,11 @@
     <h1>Welcome to Vector Costa Rica Manager</h1>
     <p>Taking concepts to the next level, together. We innovate, create, and overcome challenges with every project.</p>
 
+    @if(session('error'))
+        <div class="error-message" style="color: #ff6b6b; margin-bottom: 20px;">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <!-- Botón de iniciar sesión centrado -->
     <div>
