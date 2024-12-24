@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use Aacotroneo\Saml2\Saml2Auth;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +19,7 @@ use OneLogin\Saml2\Error;
 
 class Saml2Controller extends Controller
 {
-    protected function getSaml2Auth()
+    protected function getSaml2Auth(): OneLogin_Saml2_Auth
     {
         try {
             Log::debug('Intentando inicializar SAML2Auth');
@@ -82,7 +87,7 @@ class Saml2Controller extends Controller
         }
     }
 
-    public function login()
+    public function login(): Application|Redirector|RedirectResponse
     {
         try {
             Log::debug('Iniciando proceso de login SAML2');
@@ -99,7 +104,7 @@ class Saml2Controller extends Controller
         }
     }
 
-    public function acs(Request $request)
+    public function acs(Request $request): Application|Redirector|RedirectResponse
     {
         try {
             Log::debug('ACS: Iniciando procesamiento de respuesta SAML', [
@@ -150,7 +155,7 @@ class Saml2Controller extends Controller
         }
     }
 
-    public function logout()
+    public function logout(): Application|string|Redirector|RedirectResponse|null
     {
         try {
             $user = Auth::user();
@@ -170,7 +175,7 @@ class Saml2Controller extends Controller
         }
     }
 
-    public function metadata()
+    public function metadata(): Application|Response|ResponseFactory
     {
         try {
             $auth = $this->getSaml2Auth();
