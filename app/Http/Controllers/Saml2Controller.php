@@ -19,6 +19,9 @@ use OneLogin\Saml2\Error;
 
 class Saml2Controller extends Controller
 {
+    /**
+     * @throws Exception
+     */
     protected function getSaml2Auth(): Saml2Auth
     {
         return new Saml2Auth(Saml2Auth::loadOneLoginAuthFromIpdConfig('vectoradminapp'));
