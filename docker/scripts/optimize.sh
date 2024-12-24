@@ -9,23 +9,30 @@ check_cache_table() {
     return $?
 }
 
+echo "=== Fase 1: Limpieza de cachés ==="
 # Limpiar cachés de manera segura
 if check_cache_table; then
-    echo "Limpiando cachés..."
+    echo "Limpiando caché de la base de datos..."
     php artisan cache:clear || true
 fi
 
-echo "Limpiando otras cachés..."
+echo "Limpiando cachés del sistema..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-echo "Generando cachés..."
+echo "=== Fase 2: Generación de nuevas cachés ==="
+echo "Generando caché de configuración..."
 php artisan config:cache
+
+echo "Generando caché de rutas..."
 php artisan route:cache
+
+echo "Generando caché de vistas..."
 php artisan view:cache
 
+echo "=== Fase 3: Optimización de autoload ==="
 echo "Optimizando el cargador de clases..."
 composer dump-autoload --optimize --no-dev
 
-echo "Optimizaciones completadas exitosamente."
+echo "=== Optimizaciones completadas exitosamente ==="
