@@ -74,7 +74,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailIsVerified::class,
         ]);
 
-        $middleware->append(StartSession::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
