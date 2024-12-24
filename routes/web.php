@@ -35,7 +35,7 @@ Route::prefix('auth/saml2')->group(function () {
 
     Route::post('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Solo quitamos el CSRF
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
 });
