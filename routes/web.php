@@ -1,7 +1,9 @@
 <?php
 
 use Aacotroneo\Saml2\Saml2Auth;
+use App\Http\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AssetsController,
     BrandingsController,
@@ -30,9 +32,15 @@ Route::get('/', function () {
 
 Route::prefix('auth/saml2')->group(function () {
     Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
-    Route::match(['get', 'post'], 'callback', [Saml2Controller::class, 'acs'])
+
+    Route::post('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+        ->withoutMiddleware([
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            StartSession::class,
+            EncryptCookies::class
+        ]);
+
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
 });
 
