@@ -73,6 +73,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle' => ThrottleRequests::class,
             'verified' => EnsureEmailIsVerified::class,
         ]);
+
+        $middleware->append(StartSession::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
