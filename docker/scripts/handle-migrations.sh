@@ -3,7 +3,7 @@ set -e
 
 echo "Verificando estado de la base de datos..."
 
-# Función para esperar a que MySQL esté disponible
+# Esperar a que MySQL esté disponible
 wait_for_mysql() {
     echo "Esperando a que MySQL esté disponible..."
     for i in $(seq 1 30); do
@@ -21,15 +21,30 @@ wait_for_mysql() {
 # Esperar a que MySQL esté disponible
 wait_for_mysql
 
-# Verificar si las tablas existen y ejecutar migraciones según corresponda
-TABLES_EXIST=$(php artisan db:show --json 2>/dev/null | grep -o '"tables":[0-9]*' | cut -d':' -f2)
+# Verificar si hay tablas en la base de datos
+TABLES_COUNT=$(php artisan db:show --json 2>/dev/null | grep -o '"tables":[0-9]*' | cut -d':' -f2)
 
-if [ -z "$TABLES_EXIST" ] || [ "$TABLES_EXIST" -eq "0" ]; then
+if [ -z "$TABLES_COUNT" ] || [ "$TABLES_COUNT" -eq "0" ]; then
     echo "Base de datos vacía, ejecutando migraciones iniciales..."
+    # Como la base de datos está vacía, es seguro ejecutar todas las migraciones
     php artisan migrate --force
     echo "Migraciones iniciales completadas."
+
+    # Crear las tablas de caché específicamente si no existen
+    if ! php artisan schema:table cache > /dev/null 2>&1; then
+        echo "Creando tablas de caché..."
+        php artisan cache:table
+        php artisan migrate --force
+    fi
+
+    # Crear las tablas de sesiones si no existen
+    if ! php artisan schema:table sessions > /dev/null 2>&1; then
+        echo "Creando tablas de sesiones..."
+        php artisan session:table
+        php artisan migrate --force
+    fi
 else
-    echo "Verificando migraciones pendientes..."
+    echo "Base de datos existente, verificando migraciones pendientes..."
 
     # Verificar si hay migraciones pendientes
     PENDING_MIGRATIONS=$(php artisan migrate:status --json | grep -o '"pending":[0-9]*' | cut -d':' -f2)
