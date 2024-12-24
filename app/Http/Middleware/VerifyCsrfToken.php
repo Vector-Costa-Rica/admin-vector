@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'saml2/acs' // Excluimos la ruta ACS de SAML2 de la verificación CSRF
+        'saml2/acs',
+        'auth/saml2/callback'
     ];
 }
