@@ -21,17 +21,36 @@ wait_for_mysql() {
 # Esperar a que MySQL esté disponible
 wait_for_mysql
 
-# Verificar el estado de las migraciones
-echo "Verificando estado de las migraciones..."
-MIGRATION_STATUS=$(php artisan migrate:status --json)
+# Verificar si hay tablas en la base de datos
+TABLES_COUNT=$(php artisan db:show --json 2>/dev/null | grep -o '"tables":[0-9]*' | cut -d':' -f2)
 
-if [ $? -eq 0 ]; then
+if [ -z "$TABLES_COUNT" ] || [ "$TABLES_COUNT" -eq "0" ]; then
+    echo "Base de datos vacía, ejecutando migraciones iniciales..."
+    # Como la base de datos está vacía, es seguro ejecutar todas las migraciones
+    php artisan migrate --force
+    echo "Migraciones iniciales completadas."
+
+    # Crear las tablas de caché específicamente si no existen
+  #  if ! php artisan schema:table cache > /dev/null 2>&1; then
+  #      echo "Creando tablas de caché..."
+  #      php artisan cache:table
+  #      php artisan migrate --force
+  #  fi
+  #
+
+    # Crear las tablas de sesiones si no existen
+  #  if ! php artisan schema:table sessions > /dev/null 2>&1; then
+  #      echo "Creando tablas de sesiones..."
+  #      php artisan session:table
+  #      php artisan migrate --force
+  #  fi
+else
+    echo "Base de datos existente, verificando migraciones pendientes..."
+
     # Verificar si hay migraciones pendientes
-    PENDING_MIGRATIONS=$(echo $MIGRATION_STATUS | grep -o '"pending":[0-9]*' | cut -d':' -f2)
+    PENDING_MIGRATIONS=$(php artisan migrate:status --json | grep -o '"pending":[0-9]*' | cut -d':' -f2)
 
-    if [ -z "$PENDING_MIGRATIONS" ] || [ "$PENDING_MIGRATIONS" -eq "0" ]; then
-        echo "No hay migraciones pendientes. La base de datos está actualizada."
-    else
+    if [ "$PENDING_MIGRATIONS" -gt "0" ]; then
         echo "Detectadas $PENDING_MIGRATIONS migraciones pendientes."
         echo "Verificando si son seguras..."
 
@@ -46,10 +65,9 @@ if [ $? -eq 0 ]; then
             echo "Las migraciones son seguras, procediendo..."
             php artisan migrate --force
         fi
+    else
+        echo "No hay migraciones pendientes."
     fi
-else
-    echo "Error al verificar el estado de las migraciones."
-    exit 1
 fi
 
 echo "Proceso de migración completado."
