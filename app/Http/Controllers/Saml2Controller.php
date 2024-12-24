@@ -46,9 +46,7 @@ class Saml2Controller extends Controller
             config(['saml2_settings.vectoradminapp.sp.assertionConsumerService.url' => $callbackUrl]);
 
             // Iniciar el proceso de login
-            //return $auth->login(route('home'));
-            $auth->login(route('home'));
-            return redirect()->route('home');
+            return $auth->login(route('home'));
 
         } catch (Exception $e) {
             Log::error('SAML2 Login Error: ' . $e->getMessage());
@@ -135,6 +133,9 @@ class Saml2Controller extends Controller
             if (!$request->has('SAMLResponse')) {
                 throw new Exception('No se recibió respuesta SAML');
             }
+
+            // Desactivar la verificación CSRF solo para esta solicitud
+            $request->session()->forget('_token');
 
             $auth = $this->getSaml2Auth();
 
