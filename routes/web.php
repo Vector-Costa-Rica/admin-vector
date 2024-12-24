@@ -8,11 +8,13 @@ use App\Http\Controllers\{AssetsController,
     ClientImagesController,
     ClientsController,
     CountriesController,
+    HomeController,
     LanguagesController,
     ProjectsController,
     ProjectStatesController,
     ProposalsController,
     CustomAssetsController,
+    Saml2Controller,
     ServicesController,
     StatesController,
     TechDocsController,
@@ -25,13 +27,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Deshabilitar rutas de autenticación tradicional excepto logout
-Auth::routes(['register' => false, 'reset' => false, 'verify' => false]);
+Route::prefix('saml2')->group(function () {
+    Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
+    Route::post('acs', [Saml2Controller::class, 'acs'])->name('saml2.acs');
+    Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
+});
 
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
-    ->name('home');
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+});
 
 //Assets
 Route::resource('assets', AssetsController::class);

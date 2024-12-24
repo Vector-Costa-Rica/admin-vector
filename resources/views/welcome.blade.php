@@ -236,7 +236,7 @@
 
     <!-- Botón de iniciar sesión centrado -->
     <div>
-        <a href="{{ url('/admin/login') }}" class="login-button">Login</a>
+        <a href="{{ route('saml2.login') }}" class="login-button">Login</a>
     </div>
 </div>
 
