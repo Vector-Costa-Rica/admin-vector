@@ -19,12 +19,72 @@ use OneLogin\Saml2\Error;
 
 class Saml2Controller extends Controller
 {
-    /**
-     * @throws Exception
-     */
-    protected function getSaml2Auth(): Saml2Auth
+    protected function getSaml2Auth(): OneLogin_Saml2_Auth
     {
-        return new Saml2Auth(Saml2Auth::loadOneLoginAuthFromIpdConfig('vectoradminapp'));
+        try {
+            Log::debug('Intentando inicializar SAML2Auth');
+
+            $config = config('saml2_settings.vectoradminapp');
+            if (!$config) {
+                throw new Exception('Configuración SAML2 no encontrada para vectoradminapp');
+            }
+
+            Log::debug('Configuración SAML2 encontrada', ['config' => $config]);
+
+            // Configurar las opciones de SAML
+            $settingsArray = [
+                'strict' => false,
+                'debug' => true,
+                'baseurl' => url('/'),
+                'sp' => [
+                    'entityId' => $config['sp']['entityId'],
+                    'assertionConsumerService' => [
+                        'url' => $config['sp']['assertionConsumerService']['url'],
+                        'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+                    ],
+                    'singleLogoutService' => [
+                        'url' => $config['sp']['singleLogoutService']['url'],
+                        'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+                    ],
+                    'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+                    'x509cert' => $config['sp']['x509cert'],
+                    'privateKey' => $config['sp']['privateKey'],
+                ],
+                'idp' => [
+                    'entityId' => $config['idp']['entityId'],
+                    'singleSignOnService' => [
+                        'url' => $config['idp']['singleSignOnService']['url'],
+                        'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+                    ],
+                    'singleLogoutService' => [
+                        'url' => $config['idp']['singleLogoutService']['url'],
+                        'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+                    ],
+                    'x509cert' => $config['idp']['x509cert'],
+                ],
+                'security' => [
+                    'nameIdEncrypted' => false,
+                    'authnRequestsSigned' => false,
+                    'logoutRequestSigned' => false,
+                    'logoutResponseSigned' => false,
+                    'signMetadata' => false,
+                    'wantMessagesSigned' => false,
+                    'wantAssertionsSigned' => false,
+                    'wantNameIdEncrypted' => false,
+                    'requestedAuthnContext' => true,
+                ],
+            ];
+
+            Log::debug('Creando instancia de OneLogin_Saml2_Auth');
+            return new OneLogin_Saml2_Auth($settingsArray);
+        } catch (Exception $e) {
+            Log::error('SAML2 Init Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     public function login(): Application|string|Redirector|RedirectResponse|null
