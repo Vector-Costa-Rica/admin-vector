@@ -246,7 +246,15 @@ class Saml2Controller extends Controller
             $settings = $auth->getSettings();
             $metadata = $settings->getSPMetadata();
 
-            return response($metadata, 200, ['Content-Type' => 'text/xml']);
+            // Asegurar que el XML esté limpio
+            $dom = new \DOMDocument();
+            $dom->loadXML($metadata);
+            $metadata = $dom->saveXML();
+
+            return response($metadata, 200, [
+                'Content-Type' => 'text/xml',
+                'Content-Disposition' => 'attachment; filename="metadata.xml"'
+            ]);
         } catch (Exception $e) {
             Log::error('SAML2 Metadata Error: ' . $e->getMessage());
             return response('Error generating metadata', 500);

@@ -12,7 +12,9 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "onelogin/php-saml": "^3.7",
-        "socialiteproviders/microsoft-azure": "^5.2"
+        "socialiteproviders/microsoft-azure": "^5.2",
+
+        "ext-dom": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
