@@ -99,10 +99,65 @@ class Saml2Controller extends Controller
         }
     }
 
-
-
-
     public function acs(Request $request): Application|Redirector|RedirectResponse
+    {
+        try {
+            Log::debug('Recibiendo respuesta SAML', [
+                'method' => $request->method(),
+                'has_saml_response' => $request->has('SAMLResponse')
+            ]);
+
+            if (!$request->has('SAMLResponse')) {
+                throw new Exception('No se recibió respuesta SAML');
+            }
+
+            $auth = $this->getSaml2Auth();
+
+            // Verificar y procesar la respuesta SAML
+            $requestID = isset($_SESSION['AuthNRequestID']) ? $_SESSION['AuthNRequestID'] : null;
+            $auth->processResponse($requestID);
+            unset($_SESSION['AuthNRequestID']);
+
+            $errors = $auth->getErrors();
+            if (!empty($errors)) {
+                throw new Exception('Error SAML: ' . implode(', ', $errors));
+            }
+
+            if (!$auth->isAuthenticated()) {
+                throw new Exception('No autenticado después del SSO');
+            }
+
+            $email = $auth->getNameId();
+
+            if (!str_ends_with($email, '@vectorcr.com')) {
+                throw new Exception('Solo se permite el acceso con correo de Vector');
+            }
+
+            $attributes = $auth->getAttributes();
+            $name = $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0] ??
+                $attributes['givenname'][0] ??
+                explode('@', $email)[0];
+
+            $user = User::updateOrCreate(
+                ['email' => $email],
+                ['name' => $name]
+            );
+
+            Auth::login($user);
+
+            // Ignorar el token CSRF solo para esta respuesta
+            $_SERVER['disable_csrf'] = true;
+
+            return redirect()->intended(route('home'));
+
+        } catch (Exception $e) {
+            Log::error('SAML ACS Error: ' . $e->getMessage());
+            return redirect('/')->with('error', 'Error procesando la autenticación.');
+        }
+    }
+
+
+    /*public function acs(Request $request): Application|Redirector|RedirectResponse
     {
         try {
             if (!$request->has('SAMLResponse')) {
@@ -144,7 +199,7 @@ class Saml2Controller extends Controller
             ]);
             return redirect('/')->with('error', 'Error en la autenticación: ' . $e->getMessage());
         }
-    }
+    }*/
 
     public function logout(Request $request): Application|string|Redirector|RedirectResponse|null
     {
