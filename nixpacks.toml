@@ -2,22 +2,22 @@
 cmds = [
     "mkdir -p public/build/assets",
     "chmod -R 775 public/build",
-    "ls -la public/build"          # Debug to verify directory structure
+    "ls -la public/build"          
 ]
 
 [phases.install]
 cmds = [
     "mkdir -p /var/log/nginx /var/cache/nginx",
     "export COMPOSER_ALLOW_SUPERUSER=1",  # Allow Composer plugins
-    "composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --jobs=2",
-    "npm install"                          # Ensure consistent dependency installation
+    "composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs",
+    "npm install"                         
 ]
 
 [phases.build]
 cmds = [
     "echo 'Starting build process...'",
-    "NODE_ENV=production npm run build",    # Force production mode
-    "ls -la public/build",                  # Verify build output
+    "NODE_ENV=production npm run build",    
+    "ls -la public/build",                 
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache",
@@ -30,4 +30,4 @@ cmds = [
 [variables]
 NODE_ENV = "production"
 VITE_APP_URL = "https://vectoradminapp.vectorcr.com"
-ASSET_URL = "/build"                          # Ensures assets are correctly resolved
+ASSET_URL = "/build"                      
