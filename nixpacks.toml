@@ -1,0 +1,32 @@
+[phases.install]
+cmds = [
+    "mkdir -p /var/log/nginx /var/cache/nginx",
+    "composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs",
+    "npm install",                                                                                           # Ensure consistent dependency installation
+]
+
+[phases.setup]
+cmds = [
+    "mkdir -p public/build/assets",
+    "chmod -R 775 public/build",
+    "ls -la public/build",          # Debug to verify directory structure
+]
+
+[phases.build]
+cmds = [
+    "echo 'Starting build process...'",
+    "NODE_ENV=production npm run build",    # Force production mode
+    "ls -la public/build",                  # Verify build output
+    "php artisan config:cache",
+    "php artisan route:cache",
+    "php artisan view:cache",
+    "php artisan migrate --seed --force ",
+    "echo 'Removing unnecessary files...'",
+    "rm -rf node_modules",
+]
+
+# Ensure critical environment variables
+[variables]
+NODE_ENV = "production"
+VITE_APP_URL = "https://vectoradminapp.vectorcr.com"
+ASSET_URL = "/build"                          # Ensures assets are correctly resolved
