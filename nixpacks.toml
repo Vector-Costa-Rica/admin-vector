@@ -1,15 +1,16 @@
-[phases.install]
-cmds = [
-    "mkdir -p /var/log/nginx /var/cache/nginx",
-    "composer install --legacy-peer-deps --no-optional --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --jobs=2",
-    "npm install",                                                                                           # Ensure consistent dependency installation
-]
-
 [phases.setup]
 cmds = [
     "mkdir -p public/build/assets",
     "chmod -R 775 public/build",
-    "ls -la public/build",          # Debug to verify directory structure
+    "ls -la public/build"          # Debug to verify directory structure
+]
+
+[phases.install]
+cmds = [
+    "mkdir -p /var/log/nginx /var/cache/nginx",
+    "export COMPOSER_ALLOW_SUPERUSER=1",  # Allow Composer plugins
+    "composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --jobs=2",
+    "npm install"                          # Ensure consistent dependency installation
 ]
 
 [phases.build]
@@ -23,10 +24,9 @@ cmds = [
     "echo 'Removing unnecessary files...'",
     "rm -rf node_modules",
     "echo 'Running migrations...'",
-    "php artisan migrate --force ",
+    "php artisan migrate --force"
 ]
 
-# Ensure critical environment variables
 [variables]
 NODE_ENV = "production"
 VITE_APP_URL = "https://vectoradminapp.vectorcr.com"
