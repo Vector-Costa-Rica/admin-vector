@@ -29,6 +29,8 @@ use App\Http\Controllers\{AssetsController,
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
+Route::get('auth/saml2/metadata', [Saml2Controller::class, 'metadata'])->name('saml2.metadata');
+
 
 Route::prefix('auth/saml2')->group(function () {
     Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
@@ -39,7 +41,6 @@ Route::prefix('auth/saml2')->group(function () {
 
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
 });
-Route::get('auth/saml2/metadata', [Saml2Controller::class, 'metadata'])->name('saml2.metadata');
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');

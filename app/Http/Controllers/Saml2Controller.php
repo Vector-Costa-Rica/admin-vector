@@ -31,7 +31,7 @@ class Saml2Controller extends Controller
         }
     }*/
 
-    public function login()
+    public function login(): Application|string|Redirector|RedirectResponse|null
     {
         try {
             $auth = $this->getSaml2Auth();
@@ -227,6 +227,10 @@ class Saml2Controller extends Controller
         }
     }*/
 
+    /**
+     * @throws Error
+     * @throws Exception
+     */
     public function logout(Request $request): Application|string|Redirector|RedirectResponse|null
     {
         if (Auth::check()) {
