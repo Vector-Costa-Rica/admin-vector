@@ -18,14 +18,4 @@ class VerifyCsrfToken extends Middleware
         'saml2/acs',
         'auth/saml2/*'
     ];
-
-    protected function tokensMatch($request): bool
-    {
-        // Si está marcado para ignorar CSRF (caso SAML)
-        if (isset($_SERVER['disable_csrf']) && $_SERVER['disable_csrf'] === true) {
-            return true;
-        }
-
-        return parent::tokensMatch($request);
-    }
 }
