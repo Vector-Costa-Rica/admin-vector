@@ -39,8 +39,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Verificar el entorno usando $_ENV o getenv()
+        $isProduction = ($_ENV['APP_ENV'] ?? getenv('APP_ENV')) === 'production';
 
-        if (app()->environment('production')) {
+        if ($isProduction) {
             $middleware->trustProxies('*', [
                 Request::HEADER_FORWARDED => 'FORWARDED',
                 Request::HEADER_X_FORWARDED_FOR => 'X_FORWARDED_FOR',
@@ -49,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 Request::HEADER_X_FORWARDED_PROTO => 'X_FORWARDED_PROTO',
             ]);
         }
+
         $middleware->append([
             HttpsProtocol::class
         ]);
