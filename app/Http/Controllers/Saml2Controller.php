@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Aacotroneo\Saml2\Saml2Auth;
+use DOMDocument;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
@@ -34,24 +35,10 @@ class Saml2Controller extends Controller
             $returnTo = route('home');
             Log::debug('URL de retorno configurada', ['returnTo' => $returnTo]);
 
-            // Generar la URL y los parámetros SAML
-            $ssoUrl = $auth->getSSOurl();
-            $authParams = $auth->getAuthnRequestParams($returnTo);
+            // Usar el método login directamente, que internamente generará la solicitud SAML
+            $loginUrl = $auth->login($returnTo, [], false, false, true);
 
-            Log::debug('Parámetros de autenticación', [
-                'ssoUrl' => $ssoUrl,
-                'params' => $authParams
-            ]);
-
-            // Construir la URL con los parámetros
-            $queryParams = http_build_query([
-                'SAMLRequest' => $authParams['SAMLRequest'],
-                'RelayState' => $authParams['RelayState'] ?? $returnTo
-            ]);
-
-            $loginUrl = $ssoUrl . (strpos($ssoUrl, '?') === false ? '?' : '&') . $queryParams;
-
-            Log::debug('URL final de redirección', ['url' => $loginUrl]);
+            Log::debug('URL de login generada', ['loginUrl' => $loginUrl]);
 
             // Realizar la redirección
             return redirect()->away($loginUrl, 302, [
@@ -71,6 +58,9 @@ class Saml2Controller extends Controller
         }
     }
 
+    /**
+     * @throws Error
+     */
     protected function getSaml2Auth(): OneLogin_Saml2_Auth
     {
         try {
@@ -290,7 +280,7 @@ class Saml2Controller extends Controller
             $metadata = $settings->getSPMetadata();
 
             // Asegurar que el XML esté limpio
-            $dom = new \DOMDocument();
+            $dom = new DOMDocument();
             $dom->loadXML($metadata);
             $metadata = $dom->saveXML();
 
