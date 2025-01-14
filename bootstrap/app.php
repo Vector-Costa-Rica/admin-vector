@@ -43,13 +43,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $isProduction = ($_ENV['APP_ENV'] ?? getenv('APP_ENV')) === 'production';
 
         if ($isProduction) {
-            $middleware->trustProxies('*', [
-                Request::HEADER_FORWARDED => 'FORWARDED',
-                Request::HEADER_X_FORWARDED_FOR => 'X_FORWARDED_FOR',
-                Request::HEADER_X_FORWARDED_HOST => 'X_FORWARDED_HOST',
-                Request::HEADER_X_FORWARDED_PORT => 'X_FORWARDED_PORT',
-                Request::HEADER_X_FORWARDED_PROTO => 'X_FORWARDED_PROTO',
-            ]);
+            // En Laravel 11, trustProxies acepta un segundo parámetro entero
+            $middleware->trustProxies('*', Request::HEADER_X_FORWARDED_FOR |
+                Request::HEADER_X_FORWARDED_HOST |
+                Request::HEADER_X_FORWARDED_PORT |
+                Request::HEADER_X_FORWARDED_PROTO |
+                Request::HEADER_X_FORWARDED_AWS_ELB);
         }
 
         $middleware->append([
