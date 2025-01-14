@@ -1,0 +1,32 @@
+name: Support Request
+description: Request help or troubleshooting assistance
+title: "[SUPPORT] "
+labels: ["support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **What do you need help with?**
+        Provide a clear and concise description of the problem.
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Add relevant details or context for the support request.
+
+  - type: input
+    id: system_info
+    attributes:
+      label: Affected System
+      description: Specify the system or area affected (e.g., database, UI, API).
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How quickly do you need assistance?
+      options:
+        - High
+        - Medium
+        - Low

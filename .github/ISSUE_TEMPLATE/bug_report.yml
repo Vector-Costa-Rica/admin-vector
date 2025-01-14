@@ -1,0 +1,66 @@
+name: "🐛 Bug Report"
+description: "File a bug report for your project."
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees:
+  - vectorcr
+projects:
+  - Vector-Costa-Rica/9
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Thank you for reporting a bug!
+        Please fill out the form below with as much detail as possible.
+        🖼️ Feel free to attach screenshots to help illustrate the issue.
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: "🛠️ Steps to Reproduce"
+      description: "How can we reproduce this bug? Include step-by-step instructions."
+      placeholder: |
+        1. 🖱️ Go to...
+        2. 🟢 Click on...
+        3. ❌ See the error...
+    validations:
+      required: true
+
+  - type: input
+    id: expected-behavior
+    attributes:
+      label: "✨ Expected Behavior"
+      description: "What did you expect to happen?"
+      placeholder: "✅ Describe the expected behavior here."
+    validations:
+      required: true
+
+  - type: input
+    id: actual-behavior
+    attributes:
+      label: "⚠️ Actual Behavior"
+      description: "What actually happened?"
+      placeholder: "❌ Describe the actual behavior here."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "📊 Severity"
+      description: "How severe is this issue?"
+      options:
+        - "🔥 Critical"
+        - "⚡ Major"
+        - "🔧 Minor"
+        - "🎨 Cosmetic"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "📝 Additional Context"
+      description: "Provide any other details, logs, or screenshots."
+      placeholder: "📂 Paste logs, error messages, or other context here."

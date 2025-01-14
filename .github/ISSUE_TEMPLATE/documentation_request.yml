@@ -1,0 +1,27 @@
+name: Documentation Request
+description: Request updates or additions to documentation
+title: "[DOC] "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **What documentation is needed?**
+        Provide details about the area of documentation requiring updates.
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What should the documentation cover?
+      placeholder: "E.g., API integration, setup guide, troubleshooting"
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How quickly is this documentation needed?
+      options:
+        - High
+        - Medium
+        - Low

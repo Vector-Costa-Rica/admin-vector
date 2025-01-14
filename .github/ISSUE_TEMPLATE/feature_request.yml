@@ -1,0 +1,32 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[FEATURE] "
+labels: ["enhancement", "discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **What is your idea?**
+        Describe the new feature or improvement you'd like to see.
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: Describe the benefits this feature will bring to users or the project.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - High
+        - Medium
+        - Low
+
+  - type: input
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: Link to any related issues or discussions.

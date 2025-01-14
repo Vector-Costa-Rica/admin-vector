@@ -1,0 +1,26 @@
+name: Task or Enhancement
+description: General tasks or minor improvements
+title: "[TASK] "
+labels: ["task", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Task Description:**
+        Provide a clear description of the task or enhancement.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this task?
+      options:
+        - High
+        - Medium
+        - Low
+
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Are there any dependencies for this task? (e.g., other issues, pull requests)

@@ -1,0 +1,76 @@
+name: Informe de Error
+description: Reporta un error para tu proyecto.
+title: "[Error]: "
+labels:
+  - error
+  - triage
+assignees:
+  - vectorcr
+projects:
+  - Vector-Costa-Rica/9
+body:
+  - type: markdown
+    attributes:
+      value: >
+        ## ¡Gracias por reportar un error!
+
+        Por favor, llena el siguiente formulario con la mayor cantidad de
+        detalles posible.
+  - type: textarea
+    id: pasos-para-reproducir
+    attributes:
+      label: Pasos para Reproducir
+      description: ¿Cómo podemos reproducir este error? Incluye instrucciones paso a paso.
+      placeholder: |
+        1. Ir a...
+        2. Hacer clic en...
+        3. Ver el error...
+    validations:
+      required: true
+  - type: input
+    id: comportamiento-esperado
+    attributes:
+      label: Comportamiento Esperado
+      description: ¿Qué esperabas que sucediera?
+      placeholder: Describe el comportamiento esperado aquí.
+    validations:
+      required: true
+  - type: input
+    id: comportamiento-real
+    attributes:
+      label: Comportamiento Real
+      description: ¿Qué sucedió realmente?
+      placeholder: Describe el comportamiento real aquí.
+    validations:
+      required: true
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad
+      description: ¿Qué tan grave es este problema?
+      options:
+        - Crítico
+        - Mayor
+        - Menor
+        - Cosmético
+      default: 3
+    validations:
+      required: true
+  - type: textarea
+    id: contexto-adicional
+    attributes:
+      label: Contexto Adicional
+      description: Proporciona más detalles, registros o capturas de pantalla.
+      placeholder: Pega registros, mensajes de error u otro contexto aquí.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmar
+    attributes:
+      label: Confirmación
+      description: Por favor confirma lo siguiente
+      options:
+        - label: He buscado problemas similares.
+          required: true
+        - label: He revisado la documentación.
+          required: true
