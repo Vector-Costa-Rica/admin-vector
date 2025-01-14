@@ -30,37 +30,32 @@ jobs:
 
       - name: Create branch for new issue
         if: github.event_name == 'issues'
-        env:
-          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
+        shell: bash
         run: |
-          # Echo debug information
-          echo "Creating branch for issue #${ISSUE_NUMBER}"
-          echo "Issue title: ${ISSUE_TITLE}"
+          # Store variables safely
+          ISSUE_NUM="${{ github.event.issue.number }}"
+          TITLE="${{ github.event.issue.title }}"
 
-          # Create branch name
-          SANITIZED_TITLE=$(echo "${ISSUE_TITLE}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | tr ' ' '-')
-          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SANITIZED_TITLE}"
+          # Sanitize the title
+          CLEAN_TITLE=$(echo "$TITLE" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | tr -s '-')
+          BRANCH_NAME="issue-${ISSUE_NUM}-${CLEAN_TITLE}"
 
-          echo "Branch name will be: ${BRANCH_NAME}"
+          echo "Creating branch: $BRANCH_NAME"
 
           # Check if branch exists
-          if ! git ls-remote --exit-code --heads origin "${BRANCH_NAME}"; then
-            echo "Creating new branch: ${BRANCH_NAME}"
-
+          if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
             # Configure git
             git config --global user.name 'github-actions[bot]'
             git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
             # Create and push branch
-            git checkout -b "${BRANCH_NAME}"
-            git push origin "${BRANCH_NAME}"
+            git checkout -b "$BRANCH_NAME"
+            git push origin "$BRANCH_NAME"
 
             # Comment on issue
-            gh issue comment "${ISSUE_NUMBER}" --body "Branch \`${BRANCH_NAME}\` created!"
-
-            echo "Branch created successfully"
+            gh issue comment "$ISSUE_NUM" --body "Branch \`$BRANCH_NAME\` created!"
           else
-            echo "Branch ${BRANCH_NAME} already exists"
+            echo "Branch $BRANCH_NAME already exists"
           fi
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
