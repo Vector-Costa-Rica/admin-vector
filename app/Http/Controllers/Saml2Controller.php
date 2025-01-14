@@ -30,17 +30,11 @@ class Saml2Controller extends Controller
 
             $auth = $this->getSaml2Auth();
 
-            Log::debug('Configuración SAML generada:', [
-                'settings' => $auth->getSettings()->getSettings()
-            ]);
+            // Registrar la configuración sin usar getSettings()
+            Log::debug('Configuración SAML generada para login');
 
-            $loginRedirect = $auth->login(route('home'));
-
-            Log::debug('URL de redirección generada:', [
-                'redirect_url' => $loginRedirect
-            ]);
-
-            return $loginRedirect;
+            // Iniciar el proceso de login directamente
+            return $auth->login(route('home'));
 
         } catch (Exception $e) {
             Log::error('SAML2 Login Error:', [
@@ -106,6 +100,8 @@ class Saml2Controller extends Controller
                     'wantAssertionsSigned' => false,
                     'wantNameIdEncrypted' => false,
                     'requestedAuthnContext' => true,
+                    'relaxDestinationValidation' => true,
+                    'destinationStrictlyMatches' => false
                 ],
             ];
 
