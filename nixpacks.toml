@@ -10,7 +10,8 @@ cmds = [
     "mkdir -p /var/log/nginx /var/cache/nginx",
     "export COMPOSER_ALLOW_SUPERUSER=1",  # Allow Composer plugins
     "composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs",
-    "npm install"
+    "npm install",
+    "cp .env.example .env"
 ]
 
 [phases.build]
