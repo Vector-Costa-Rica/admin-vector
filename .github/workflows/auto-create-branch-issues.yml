@@ -2,7 +2,7 @@ name: Create Branch for New Issues
 
 on:
   issues:
-    types: [opened, assigned] # Triggers on both issue creation and assignment
+    types: [opened]
   workflow_dispatch:
     inputs:
       process_existing:
@@ -28,39 +28,39 @@ jobs:
         with:
           token: ${{ steps.generate_token.outputs.token }}
 
-      - name: Process existing issues
-        if: github.event_name == 'workflow_dispatch' && inputs.process_existing == true
-        run: |
-          issues=$(gh api repos/${{ github.repository }}/issues --paginate)
-          echo "$issues" | jq -r '.[] | .number, .title' | while read -r number && read -r title; do
-            BRANCH_NAME="issue-${number}-$(echo "${title}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | tr ' ' '-')"
-            if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
-              git config --global user.name 'github-actions[bot]'
-              git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-              git checkout -b "$BRANCH_NAME"
-              git push origin "$BRANCH_NAME"
-              gh issue comment "$number" --body "Branch \`$BRANCH_NAME\` created!"
-              git checkout main
-            fi
-          done
-        env:
-          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
-
       - name: Create branch for new issue
         if: github.event_name == 'issues'
-        run: |
-          ISSUE_NUMBER=${{ github.event.issue.number }}
-          ISSUE_TITLE=${{ github.event.issue.title }}
-          BRANCH_NAME="issue-${ISSUE_NUMBER}-$(echo "${ISSUE_TITLE}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | tr ' ' '-')"
-
-          if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
-            git config --global user.name 'github-actions[bot]'
-            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-            git checkout -b "$BRANCH_NAME"
-            git push origin "$BRANCH_NAME"
-
-            # Add comment to issue
-            gh issue comment "$ISSUE_NUMBER" --body "Branch \`$BRANCH_NAME\` created!"
-          fi
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Echo debug information
+          echo "Creating branch for issue #${ISSUE_NUMBER}"
+          echo "Issue title: ${ISSUE_TITLE}"
+
+          # Create branch name
+          SANITIZED_TITLE=$(echo "${ISSUE_TITLE}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | tr ' ' '-')
+          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SANITIZED_TITLE}"
+
+          echo "Branch name will be: ${BRANCH_NAME}"
+
+          # Check if branch exists
+          if ! git ls-remote --exit-code --heads origin "${BRANCH_NAME}"; then
+            echo "Creating new branch: ${BRANCH_NAME}"
+
+            # Configure git
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+            # Create and push branch
+            git checkout -b "${BRANCH_NAME}"
+            git push origin "${BRANCH_NAME}"
+
+            # Comment on issue
+            gh issue comment "${ISSUE_NUMBER}" --body "Branch \`${BRANCH_NAME}\` created!"
+
+            echo "Branch created successfully"
+          else
+            echo "Branch ${BRANCH_NAME} already exists"
+          fi
