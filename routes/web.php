@@ -1,8 +1,8 @@
 <?php
 
 use Aacotroneo\Saml2\Saml2Auth;
-use App\Http\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\{EncryptCookies,
+    VerifyCsrfToken};
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AssetsController,
@@ -38,14 +38,14 @@ Route::prefix('auth/saml2')->group(function () {
 
     Route::post('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+        ->withoutMiddleware([VerifyCsrfToken::class]);
 
     Route::get('logout', [Saml2Controller::class, 'logout'])
         ->name('saml2.logout');
 
     Route::get('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs.get')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+        ->withoutMiddleware([VerifyCsrfToken::class]);
 });
 
 

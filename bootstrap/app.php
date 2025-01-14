@@ -27,6 +27,7 @@ use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Symfony\Component\HttpFoundation\Request as RequestAlias;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
@@ -44,11 +45,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         if ($isProduction) {
             // En Laravel 11, trustProxies acepta un segundo parámetro entero
-            $middleware->trustProxies('*', Request::HEADER_X_FORWARDED_FOR |
-                Request::HEADER_X_FORWARDED_HOST |
-                Request::HEADER_X_FORWARDED_PORT |
-                Request::HEADER_X_FORWARDED_PROTO |
-                Request::HEADER_X_FORWARDED_AWS_ELB);
+            $middleware->trustProxies('*', RequestAlias::HEADER_X_FORWARDED_FOR |
+                RequestAlias::HEADER_X_FORWARDED_HOST |
+                RequestAlias::HEADER_X_FORWARDED_PORT |
+                RequestAlias::HEADER_X_FORWARDED_PROTO |
+                RequestAlias::HEADER_X_FORWARDED_AWS_ELB);
         }
 
         $middleware->append([
