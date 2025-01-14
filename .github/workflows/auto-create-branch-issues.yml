@@ -14,7 +14,6 @@ on:
 jobs:
   create_branch:
     runs-on: ubuntu-latest
-
     steps:
       - name: Generate token
         id: generate_token
@@ -27,35 +26,41 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ steps.generate_token.outputs.token }}
+          repository: ${{ github.repository }} # Explicitly set the repository
+          ref: main # or your default branch name
 
       - name: Create branch for new issue
         if: github.event_name == 'issues'
-        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          REPO: ${{ github.repository }}
         run: |
-          # Store variables safely
-          ISSUE_NUM="${{ github.event.issue.number }}"
-          TITLE="${{ github.event.issue.title }}"
+          echo "Processing issue in repository: $REPO"
 
-          # Sanitize the title
-          CLEAN_TITLE=$(echo "$TITLE" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | tr -s '-')
-          BRANCH_NAME="issue-${ISSUE_NUM}-${CLEAN_TITLE}"
+          # Create sanitized branch name
+          CLEAN_TITLE=$(echo "$ISSUE_TITLE" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | tr -s '-')
+          BRANCH_NAME="issue-${ISSUE_NUMBER}-${CLEAN_TITLE}"
 
           echo "Creating branch: $BRANCH_NAME"
 
-          # Check if branch exists
-          if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
-            # Configure git
-            git config --global user.name 'github-actions[bot]'
-            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # Configure git
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-            # Create and push branch
+          # Ensure we're on the main branch
+          git checkout main
+          git pull origin main
+
+          # Create and push branch if it doesn't exist
+          if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
+            echo "Creating new branch: $BRANCH_NAME"
             git checkout -b "$BRANCH_NAME"
             git push origin "$BRANCH_NAME"
 
             # Comment on issue
-            gh issue comment "$ISSUE_NUM" --body "Branch \`$BRANCH_NAME\` created!"
+            gh issue comment "$ISSUE_NUMBER" --body "Branch \`$BRANCH_NAME\` created!" -R "$REPO"
           else
             echo "Branch $BRANCH_NAME already exists"
           fi
-        env:
-          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
