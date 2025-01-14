@@ -120,74 +120,66 @@ class Saml2Controller extends Controller
     public function acs(Request $request): Application|Redirector|RedirectResponse
     {
         try {
-            // Registrar headers de la petición
-            Log::debug('Headers de la petición:', [
-                'headers' => $request->headers->all(),
+            Log::debug('Inicio de procesamiento ACS SAML', [
                 'method' => $request->method(),
-                'url' => $request->fullUrl()
-            ]);
-
-            // Registrar la respuesta SAML codificada
-            Log::debug('SAMLResponse recibida (encoded):', [
-                'SAMLResponse' => $request->input('SAMLResponse')
-            ]);
-
-            // Decodificar y registrar la respuesta SAML
-            if ($request->has('SAMLResponse')) {
-                $decodedSAML = base64_decode($request->input('SAMLResponse'));
-                Log::debug('SAMLResponse decodificada:', [
-                    'decoded' => $decodedSAML
-                ]);
-            }
-
-            // Registrar todos los parámetros de la petición
-            Log::debug('Todos los parámetros de la petición:', [
-                'all_parameters' => $request->all()
+                'url' => $request->fullUrl(),
+                'secure' => $request->secure(),
+                'headers' => $request->headers->all()
             ]);
 
             if (!$request->has('SAMLResponse')) {
+                Log::error('No SAMLResponse encontrada en la petición', [
+                    'inputs' => $request->all()
+                ]);
                 throw new Exception('No se recibió respuesta SAML');
             }
 
+            // Decodificar y registrar la respuesta SAML (solo para debugging)
+            $samlResponse = base64_decode($request->input('SAMLResponse'));
+            Log::debug('SAMLResponse decodificada', [
+                'response' => $samlResponse
+            ]);
+
             $auth = $this->getSaml2Auth();
 
-            // Registrar el estado antes de procesar la respuesta
-            Log::debug('Estado antes de procesar la respuesta SAML');
+            try {
+                $auth->processResponse();
+            } catch (Exception $e) {
+                Log::error('Error procesando respuesta SAML', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
+            }
 
-            $auth->processResponse();
-
-            // Registrar errores si existen
             $errors = $auth->getErrors();
             if (!empty($errors)) {
-                Log::error('Errores SAML:', [
+                Log::error('Errores de autenticación SAML', [
                     'errors' => $errors,
-                    'error_reasons' => $auth->getLastErrorReason()
+                    'lastError' => $auth->getLastErrorReason(),
+                    'lastRequestID' => $auth->getLastRequestID(),
+                    'lastResponseXML' => $auth->getLastResponseXML()
                 ]);
                 throw new Exception('Error SAML: ' . implode(', ', $errors));
             }
 
-            // Registrar el estado de autenticación
-            Log::debug('Estado de autenticación:', [
-                'isAuthenticated' => $auth->isAuthenticated(),
-                'attributes' => $auth->getAttributes(),
-                'nameId' => $auth->getNameId()
-            ]);
-
             if (!$auth->isAuthenticated()) {
+                Log::error('Usuario no autenticado después del SSO');
                 throw new Exception('No autenticado después del SSO');
             }
 
             $email = $auth->getNameId();
+            Log::debug('Email obtenido del NameID', ['email' => $email]);
 
             if (!str_ends_with($email, '@vectorcr.com')) {
-                Log::warning('Intento de acceso con correo no autorizado:', [
+                Log::warning('Intento de acceso con correo no autorizado', [
                     'email' => $email
                 ]);
                 throw new Exception('Solo se permite el acceso con correo de Vector');
             }
 
             $attributes = $auth->getAttributes();
-            Log::debug('Atributos SAML recibidos:', [
+            Log::debug('Atributos SAML recibidos', [
                 'attributes' => $attributes
             ]);
 
@@ -200,7 +192,7 @@ class Saml2Controller extends Controller
                 ['name' => $name]
             );
 
-            Log::debug('Usuario creado/actualizado:', [
+            Log::debug('Usuario creado/actualizado exitosamente', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'name' => $user->name
@@ -208,7 +200,7 @@ class Saml2Controller extends Controller
 
             Auth::login($user);
 
-            Log::debug('Usuario autenticado exitosamente', [
+            Log::info('Login SAML completado exitosamente', [
                 'user_id' => $user->id,
                 'email' => $user->email
             ]);
@@ -216,13 +208,13 @@ class Saml2Controller extends Controller
             return redirect()->intended(route('home'));
 
         } catch (Exception $e) {
-            Log::error('SAML ACS Error:', [
+            Log::error('Error en el proceso ACS SAML', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return redirect('/')->with('error', 'Error procesando la autenticación.');
+            return redirect('/')->with('error', 'Error procesando la autenticación: ' . $e->getMessage());
         }
     }
 

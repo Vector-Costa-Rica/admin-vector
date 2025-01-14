@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\HttpsProtocol;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
@@ -37,6 +38,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+
+        $middleware->append([
+            HttpsProtocol::class
+        ]);
 
         $middleware->use([
             HandleCors::class,
