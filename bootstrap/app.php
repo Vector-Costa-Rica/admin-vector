@@ -20,6 +20,7 @@ use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Middleware\SetCacheHeaders;
 use Illuminate\Http\Middleware\ValidatePostSize;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
@@ -39,6 +40,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+        if (app()->environment('production')) {
+            $middleware->trustProxies('*', [
+                Request::HEADER_FORWARDED => 'FORWARDED',
+                Request::HEADER_X_FORWARDED_FOR => 'X_FORWARDED_FOR',
+                Request::HEADER_X_FORWARDED_HOST => 'X_FORWARDED_HOST',
+                Request::HEADER_X_FORWARDED_PORT => 'X_FORWARDED_PORT',
+                Request::HEADER_X_FORWARDED_PROTO => 'X_FORWARDED_PROTO',
+            ]);
+        }
         $middleware->append([
             HttpsProtocol::class
         ]);

@@ -10,7 +10,11 @@ class HttpsProtocol
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->secure() && App::environment('production')) {
+        // Verifica el header X-Forwarded-Proto en lugar de secure()
+        if (App::environment('production') &&
+            !$request->secure() &&
+            $request->header('X-Forwarded-Proto') !== 'https') {
+
             return redirect()->secure($request->getRequestUri());
         }
 
