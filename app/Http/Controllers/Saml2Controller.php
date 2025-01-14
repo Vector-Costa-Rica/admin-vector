@@ -35,17 +35,19 @@ class Saml2Controller extends Controller
             $returnTo = route('home');
             Log::debug('URL de retorno configurada', ['returnTo' => $returnTo]);
 
-            // Usar el método login directamente, que internamente generará la solicitud SAML
-            $loginUrl = $auth->login($returnTo, [], false, false, true);
+            // Usar el método login con los parámetros correctos para v3
+            try {
+                $loginRedirect = $auth->login($returnTo, [], true, false);
+                Log::debug('URL de login generada', ['loginUrl' => $loginRedirect]);
 
-            Log::debug('URL de login generada', ['loginUrl' => $loginUrl]);
-
-            // Realizar la redirección
-            return redirect()->away($loginUrl, 302, [
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0'
-            ]);
+                return redirect()->away($loginRedirect);
+            } catch (\Exception $e) {
+                Log::error('Error generando URL de login', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
+            }
 
         } catch (Exception $e) {
             Log::error('SAML2 Login Error:', [
@@ -73,7 +75,7 @@ class Saml2Controller extends Controller
 
             Log::debug('Configuración SAML2 encontrada', ['config' => $config]);
 
-            // Configurar las opciones de SAML
+            // Configurar las opciones de SAML para OneLogin v3
             $settingsArray = [
                 'strict' => false,
                 'debug' => true,
