@@ -34,11 +34,12 @@ class Saml2Controller extends Controller
             $returnTo = route('home');
             Log::debug('URL de retorno configurada', ['returnTo' => $returnTo]);
 
-            // Log del AuthNRequest que se enviará
+            // Genera la URL de login pero no redirecciona directamente
             $loginUrl = $auth->login($returnTo, [], false, false, true);
             Log::debug('URL de login generada', ['loginUrl' => $loginUrl]);
 
-            return redirect($loginUrl);
+            // En lugar de retornar la URL directamente, hacemos una redirección
+            return redirect()->away($loginUrl);
 
         } catch (Exception $e) {
             Log::error('SAML2 Login Error:', [

@@ -40,12 +40,13 @@ Route::prefix('auth/saml2')->group(function () {
         ->name('saml2.acs')
         ->withoutMiddleware([VerifyCsrfToken::class]);
 
-    Route::get('logout', [Saml2Controller::class, 'logout'])
-        ->name('saml2.logout');
-
+    // Agregar también la ruta GET para el callback
     Route::get('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs.get')
         ->withoutMiddleware([VerifyCsrfToken::class]);
+
+    Route::get('logout', [Saml2Controller::class, 'logout'])
+        ->name('saml2.logout');
 });
 
 
