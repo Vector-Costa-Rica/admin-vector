@@ -34,12 +34,31 @@ class Saml2Controller extends Controller
             $returnTo = route('home');
             Log::debug('URL de retorno configurada', ['returnTo' => $returnTo]);
 
-            // Genera la URL de login pero no redirecciona directamente
-            $loginUrl = $auth->login($returnTo, [], false, false, true);
-            Log::debug('URL de login generada', ['loginUrl' => $loginUrl]);
+            // Generar la URL y los parámetros SAML
+            $ssoUrl = $auth->getSSOurl();
+            $authParams = $auth->getAuthnRequestParams($returnTo);
 
-            // En lugar de retornar la URL directamente, hacemos una redirección
-            return redirect()->away($loginUrl);
+            Log::debug('Parámetros de autenticación', [
+                'ssoUrl' => $ssoUrl,
+                'params' => $authParams
+            ]);
+
+            // Construir la URL con los parámetros
+            $queryParams = http_build_query([
+                'SAMLRequest' => $authParams['SAMLRequest'],
+                'RelayState' => $authParams['RelayState'] ?? $returnTo
+            ]);
+
+            $loginUrl = $ssoUrl . (strpos($ssoUrl, '?') === false ? '?' : '&') . $queryParams;
+
+            Log::debug('URL final de redirección', ['url' => $loginUrl]);
+
+            // Realizar la redirección
+            return redirect()->away($loginUrl, 302, [
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0'
+            ]);
 
         } catch (Exception $e) {
             Log::error('SAML2 Login Error:', [

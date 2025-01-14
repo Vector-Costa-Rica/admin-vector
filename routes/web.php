@@ -40,7 +40,7 @@ Route::prefix('auth/saml2')->group(function () {
         ->name('saml2.acs')
         ->withoutMiddleware([VerifyCsrfToken::class]);
 
-    // Agregar también la ruta GET para el callback
+    // Agregar ruta GET para el callback también
     Route::get('callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs.get')
         ->withoutMiddleware([VerifyCsrfToken::class]);
