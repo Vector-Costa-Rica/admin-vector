@@ -1,0 +1,57 @@
+name: Create Branch for New Issues
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      process_existing:
+        description: "Process existing issues"
+        required: true
+        default: "false"
+        type: boolean
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Process existing issues
+        if: github.event_name == 'workflow_dispatch' && inputs.process_existing == true
+        run: |
+          issues=$(gh api repos/${{ github.repository }}/issues --paginate)
+          echo "$issues" | jq -r '.[] | .number, .title' | while read -r number && read -r title; do
+            BRANCH_NAME="issue-${number}-$(echo "${title}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | tr ' ' '-')"
+            if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
+              git config --global user.name 'github-actions[bot]'
+              git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+              git checkout -b "$BRANCH_NAME"
+              git push origin "$BRANCH_NAME"
+              git checkout main
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Create branch for new issue
+        if: github.event_name == 'issues'
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          ISSUE_TITLE=${{ github.event.issue.title }}
+          BRANCH_NAME="issue-${ISSUE_NUMBER}-$(echo "${ISSUE_TITLE}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | tr ' ' '-')"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"

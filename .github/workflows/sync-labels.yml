@@ -1,0 +1,43 @@
+name: Sync Labels to All Repos
+
+on:
+  push:
+    paths:
+      - ".github/labels.yml"
+  workflow_dispatch:
+
+jobs:
+  sync-labels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Labels CLI
+        run: npm install -g github-label-sync
+
+      - name: Get repository list
+        id: repo-list
+        run: |
+          # Get list of all org repos and format it as a JSON array
+          repos=$(gh api orgs/Vector-Costa-Rica/repos --paginate | jq -r '.[].full_name' | jq -R -s -c 'split("\n")[:-1]')
+          echo "repos=${repos}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Sync labels to all repositories
+        run: |
+          echo '${{ steps.repo-list.outputs.repos }}' | jq -r '.[]' | while read repo; do
+            echo "Syncing labels to $repo"
+            github-label-sync --access-token ${{ steps.generate_token.outputs.token }} \
+              --labels .github/labels.yml \
+              "$repo"
+          done
