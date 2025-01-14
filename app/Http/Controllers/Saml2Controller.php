@@ -141,24 +141,17 @@ class Saml2Controller extends Controller
                 'url' => $request->fullUrl(),
                 'headers' => $request->headers->all(),
                 'has_saml_response' => $request->has('SAMLResponse'),
-                'request_params' => $request->all()
+                'all_params' => $request->all()
             ]);
 
             if (!$request->has('SAMLResponse')) {
-                Log::error('No SAMLResponse encontrada en la petición');
+                Log::error('No SAMLResponse encontrada');
                 throw new Exception('No se recibió respuesta SAML');
             }
 
-            try {
-                $decodedSAMLResponse = base64_decode($request->input('SAMLResponse'));
-                Log::debug('SAMLResponse decodificada', [
-                    'response' => $decodedSAMLResponse
-                ]);
-            } catch (Exception $e) {
-                Log::error('Error decodificando SAMLResponse', [
-                    'error' => $e->getMessage()
-                ]);
-            }
+            // Decodificar y registrar la respuesta SAML para debugging
+            $samlResponse = base64_decode($request->input('SAMLResponse'));
+            Log::debug('SAMLResponse decodificada', ['response' => $samlResponse]);
 
             $auth = $this->getSaml2Auth();
 
@@ -185,8 +178,7 @@ class Saml2Controller extends Controller
             if (!empty($errors)) {
                 Log::error('Errores SAML encontrados', [
                     'errors' => $errors,
-                    'lastError' => $auth->getLastErrorReason(),
-                    'lastResponse' => $auth->getLastResponseXML()
+                    'lastError' => $auth->getLastErrorReason()
                 ]);
                 throw new Exception('Error SAML: ' . implode(', ', $errors));
             }
@@ -196,14 +188,7 @@ class Saml2Controller extends Controller
                 throw new Exception('No autenticado después del SSO');
             }
 
-            $attributes = $auth->getAttributes();
-            Log::debug('Atributos SAML recibidos', [
-                'attributes' => $attributes
-            ]);
-
-            $email = $auth->getNameId() ??
-                $attributes['emailaddress'][0] ??
-                $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'][0];
+            $email = $auth->getNameId();
             Log::debug('Email del usuario autenticado', ['email' => $email]);
 
             if (!str_ends_with($email, '@vectorcr.com')) {
@@ -212,6 +197,11 @@ class Saml2Controller extends Controller
                 ]);
                 throw new Exception('Solo se permite el acceso con correo de Vector');
             }
+
+            $attributes = $auth->getAttributes();
+            Log::debug('Atributos SAML recibidos', [
+                'attributes' => $attributes
+            ]);
 
             $name = $attributes['name'][0] ??
                 $attributes['givenname'][0] . ' ' . ($attributes['surname'][0] ?? '') ??
@@ -231,11 +221,6 @@ class Saml2Controller extends Controller
                 ]);
 
                 Auth::login($user);
-
-                Log::info('Login exitoso', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
-                ]);
 
                 return redirect()->intended(route('home'));
 

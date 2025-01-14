@@ -36,13 +36,8 @@ Route::prefix('auth/saml2')->group(function () {
     Route::get('login', [Saml2Controller::class, 'login'])
         ->name('saml2.login');
 
-    Route::post('callback', [Saml2Controller::class, 'acs'])
+    Route::match(['get', 'post'], 'callback', [Saml2Controller::class, 'acs'])
         ->name('saml2.acs')
-        ->withoutMiddleware([VerifyCsrfToken::class]);
-
-    // Agregar ruta GET para el callback también
-    Route::get('callback', [Saml2Controller::class, 'acs'])
-        ->name('saml2.acs.get')
         ->withoutMiddleware([VerifyCsrfToken::class]);
 
     Route::get('logout', [Saml2Controller::class, 'logout'])
