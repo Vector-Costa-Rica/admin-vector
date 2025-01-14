@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\HandleErrorsMiddleware;
 use App\Http\Middleware\HttpsProtocol;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -52,7 +53,8 @@ return Application::configure(basePath: dirname(__DIR__))
         }
 
         $middleware->append([
-            HttpsProtocol::class
+            HttpsProtocol::class,
+            HandleErrorsMiddleware::class
         ]);
 
         $middleware->use([
