@@ -31,16 +31,21 @@ class Saml2Controller extends Controller
 
             $auth = $this->getSaml2Auth();
 
-            // Log de la URL de retorno
-            $returnTo = route('home');
+            // Agregar el token CSRF a la URL de retorno
+            $returnTo = route('home') . '?_token=' . csrf_token();
             Log::debug('URL de retorno configurada', ['returnTo' => $returnTo]);
 
-            // Usar el método login con los parámetros correctos para v3
-            try {
-                $loginRedirect = $auth->login($returnTo, [], true, false);
-                Log::debug('URL de login generada', ['loginUrl' => $loginRedirect]);
+            // Configurar parámetros adicionales para el login
+            $parameters = [
+                'RelayState' => $returnTo,
+                'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+            ];
 
-                return redirect()->away($loginRedirect);
+            try {
+                $loginUrl = $auth->login($returnTo, $parameters, false, false, true);
+                Log::debug('URL de login generada', ['loginUrl' => $loginUrl]);
+
+                return redirect()->away($loginUrl);
             } catch (\Exception $e) {
                 Log::error('Error generando URL de login', [
                     'error' => $e->getMessage(),
@@ -144,6 +149,17 @@ class Saml2Controller extends Controller
                 'all_params' => $request->all()
             ]);
 
+            // Agregar el token CSRF a la sesión
+            if ($request->has('RelayState')) {
+                $relayState = $request->input('RelayState');
+                if (str_contains($relayState, '_token=')) {
+                    parse_str(parse_url($relayState, PHP_URL_QUERY), $params);
+                    if (isset($params['_token'])) {
+                        $request->session()->put('_token', $params['_token']);
+                    }
+                }
+            }
+
             if (!$request->has('SAMLResponse')) {
                 Log::error('No SAMLResponse encontrada');
                 throw new Exception('No se recibió respuesta SAML');
@@ -222,7 +238,19 @@ class Saml2Controller extends Controller
 
                 Auth::login($user);
 
-                return redirect()->intended(route('home'));
+                // Obtener la URL de retorno del RelayState o usar la ruta home por defecto
+                $returnTo = $request->input('RelayState') ?? route('home');
+
+                // Limpiar cualquier parámetro de token de la URL de retorno
+                $returnTo = preg_replace('/[\?&]_token=[^&]+/', '', $returnTo);
+
+                Log::info('Login exitoso - redirigiendo', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'returnTo' => $returnTo
+                ]);
+
+                return redirect()->intended($returnTo);
 
             } catch (Exception $e) {
                 Log::error('Error creando/actualizando usuario', [
