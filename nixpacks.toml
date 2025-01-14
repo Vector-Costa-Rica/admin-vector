@@ -4,7 +4,8 @@ nixPkgs = [
     'php82Extensions.pdo',
     'php82Extensions.pdo_mysql',
     'php82Extensions.sodium',
-    'nodejs_20'
+    'nodejs_20',
+    'composer'
 ]
 cmds = [
     "mkdir -p public/build/assets",
@@ -47,5 +48,3 @@ NODE_ENV = "production"
 VITE_APP_URL = "https://vectoradminapp.vectorcr.com"
 ASSET_URL = "/build"
 
-[[ports]]
-port = "8080"
