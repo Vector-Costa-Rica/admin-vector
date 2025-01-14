@@ -1,27 +1,77 @@
-name: Documentation Request
-description: Request updates or additions to documentation
-title: "[DOC] "
-labels: ["documentation"]
+name: "🇺🇸 📚 Documentation Request"
+description: "Request updates or additions to documentation"
+title: "[Doc]: "
+labels: ["📚 documentation", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
 body:
   - type: markdown
     attributes:
       value: |
-        **What documentation is needed?**
-        Provide details about the area of documentation requiring updates.
+        # 📚 Thank you for requesting documentation!
+        We strive to keep our documentation clear and helpful. Please help us understand what you need.
 
   - type: textarea
-    id: scope
+    id: what-needed
     attributes:
-      label: Scope
-      description: What should the documentation cover?
-      placeholder: "E.g., API integration, setup guide, troubleshooting"
+      label: "📝 What documentation is needed?"
+      description: "Describe what needs to be documented or updated"
+      placeholder: "Example: How to use the new contact form, Setup instructions for API integration..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-gaps
+    attributes:
+      label: "🔍 Current Documentation Gaps"
+      description: "What's missing or unclear in the current documentation?"
+      placeholder: "The current documentation doesn't explain how to..."
+    validations:
+      required: true
 
   - type: dropdown
-    id: urgency
+    id: priority
     attributes:
-      label: Urgency
-      description: How quickly is this documentation needed?
+      label: "🎯 Priority Level"
+      description: "How urgent is this documentation need?"
       options:
-        - High
-        - Medium
-        - Low
+        - "🔥 p0-critical - Immediate attention required"
+        - "🚨 p1-urgent - Address as soon as possible"
+        - "⚡ p2-high - Plan to address soon"
+        - "📊 p3-medium - Address in current sprint"
+        - "📫 p4-low - Address when possible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Documentation Type"
+      description: "What type of documentation is this?"
+      options:
+        - "🎯 core - Core functionality documentation"
+        - "🎨 ui-ux - User interface guides"
+        - "🌐 api - API documentation"
+        - "📱 mobile - Mobile-specific guides"
+        - "🔧 configuration - Setup and configuration guides"
+    validations:
+      required: true
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Contact Details"
+      description: "How can we reach you if we need clarification?"
+      placeholder: "ex. email@example.com"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Your documentation request will be reviewed and prioritized by our team.
+        We'll reach out if we need any additional information.

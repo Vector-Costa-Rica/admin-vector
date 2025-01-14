@@ -1,32 +1,84 @@
-name: Feature Request
-description: Suggest a new feature or improvement
-title: "[FEATURE] "
-labels: ["enhancement", "discussion"]
+name: "🇺🇸 ✨ Feature Request"
+description: "Suggest a new feature or improvement"
+title: "[Feature]: "
+labels: ["🔄 enhancement", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
 body:
   - type: markdown
     attributes:
       value: |
-        **What is your idea?**
-        Describe the new feature or improvement you'd like to see.
+        # ✨ Thank you for your feature suggestion!
+        Help us understand your idea for improving our service.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: "💡 What's your idea?"
+      description: "Describe the new feature or improvement you'd like to see"
+      placeholder: "I would like to see..."
+    validations:
+      required: true
 
   - type: textarea
     id: benefits
     attributes:
-      label: Benefits
-      description: Describe the benefits this feature will bring to users or the project.
+      label: "🎯 Benefits"
+      description: "What value would this feature add?"
+      placeholder: "This feature would help by..."
+    validations:
+      required: true
 
   - type: dropdown
     id: priority
     attributes:
-      label: Priority
-      description: How important is this feature?
+      label: "🎯 Priority Level"
+      description: "How important is this feature?"
       options:
-        - High
-        - Medium
-        - Low
+        - "🔥 p0-critical - Immediate attention required"
+        - "🚨 p1-urgent - Address as soon as possible"
+        - "⚡ p2-high - Plan to address soon"
+        - "📊 p3-medium - Address in current sprint"
+        - "📫 p4-low - Address when possible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Feature Category"
+      description: "What area would this feature enhance?"
+      options:
+        - "🎯 core - Core functionality enhancement"
+        - "🎨 ui-ux - User interface improvement"
+        - "⚡ performance - Performance enhancement"
+        - "🔒 security - Security feature"
+        - "📱 mobile - Mobile-specific feature"
+    validations:
+      required: true
 
   - type: input
     id: related_issues
     attributes:
-      label: Related Issues
-      description: Link to any related issues or discussions.
+      label: "🔗 Related Issues"
+      description: "Link to any related issues or discussions"
+      placeholder: "#123, #456"
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Contact Details"
+      description: "How can we reach you if we need clarification?"
+      placeholder: "ex. email@example.com"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Your feature request will be reviewed by our team and added to our backlog.
+        We'll reach out if we need any additional information.

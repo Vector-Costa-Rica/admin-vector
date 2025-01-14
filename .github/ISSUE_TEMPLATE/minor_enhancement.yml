@@ -1,0 +1,82 @@
+name: "🇨🇷 🔄 Mejora Menor"
+description: "Solicitar cambios pequeños como actualizaciones de texto o reemplazo de imágenes"
+title: "[Menor]: "
+labels: ["🔄 enhancement", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🔄 Solicitud de Mejora Menor
+        Para cambios pequeños como actualizaciones de texto, reemplazo de imágenes o ajustes visuales menores.
+
+  - type: textarea
+    id: change-description
+    attributes:
+      label: "📝 ¿Qué necesita cambiarse?"
+      description: "Describa el pequeño cambio necesario"
+      placeholder: "Ejemplo: Actualizar el texto del pie de página a..., Reemplazar el logo en la página..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-content
+    attributes:
+      label: "📍 Contenido Actual"
+      description: "¿Qué hay actualmente?"
+      placeholder: "El texto/imagen actual muestra..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: new-content
+    attributes:
+      label: "✨ Contenido Nuevo"
+      description: "¿A qué debe cambiarse?"
+      placeholder: "Debe cambiarse a..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🎯 Nivel de Prioridad"
+      description: "¿Qué tan urgente es este cambio?"
+      options:
+        - "📊 p3-medio - Atender en el sprint actual"
+        - "📫 p4-bajo - Atender cuando sea posible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: "🏷️ Tipo de Cambio"
+      description: "¿Qué tipo de cambio menor es este?"
+      options:
+        - "📝 Actualización de texto"
+        - "🖼️ Reemplazo de imagen"
+        - "🎨 Ajuste de color"
+        - "🔤 Cambio de fuente"
+        - "📏 Ajuste de espaciado"
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: "📍 Ubicación"
+      description: "¿Dónde se necesita este cambio? (URL o página/sección específica)"
+      placeholder: "ej. Pie de página principal, Encabezado de página Sobre Nosotros"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Su solicitud será revisada e implementada durante nuestro próximo ciclo de actualizaciones.

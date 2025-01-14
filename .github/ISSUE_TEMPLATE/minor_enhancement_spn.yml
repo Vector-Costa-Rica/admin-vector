@@ -1,0 +1,82 @@
+name: "🇺🇸 🔄 Minor Enhancement"
+description: "Request small changes like text updates or image replacements"
+title: "[Minor]: "
+labels: ["🔄 enhancement", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🔄 Minor Enhancement Request
+        For small changes like text updates, image replacements, or minor visual adjustments.
+
+  - type: textarea
+    id: change-description
+    attributes:
+      label: "📝 What needs to be changed?"
+      description: "Describe the small change needed"
+      placeholder: "Example: Update the text in the footer to say..., Replace the logo on page..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-content
+    attributes:
+      label: "📍 Current Content"
+      description: "What is currently there?"
+      placeholder: "The current text/image shows..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: new-content
+    attributes:
+      label: "✨ New Content"
+      description: "What should it be changed to?"
+      placeholder: "It should be changed to..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🎯 Priority Level"
+      description: "How urgent is this change?"
+      options:
+        - "📊 p3-medium - Address in current sprint"
+        - "📫 p4-low - Address when possible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: "🏷️ Type of Change"
+      description: "What kind of minor change is this?"
+      options:
+        - "📝 Text update"
+        - "🖼️ Image replacement"
+        - "🎨 Color adjustment"
+        - "🔤 Font change"
+        - "📏 Spacing adjustment"
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: "📍 Location"
+      description: "Where is this change needed? (URL or specific page/section)"
+      placeholder: "ex. Homepage footer, About page header"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Your request will be reviewed and implemented during our next update cycle.

@@ -1,0 +1,77 @@
+name: "🇨🇷 📚 Solicitud de Documentación"
+description: "Solicitar actualizaciones o adiciones a la documentación"
+title: "[Doc]: "
+labels: ["📚 documentation", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 📚 ¡Gracias por solicitar documentación!
+        Nos esforzamos por mantener nuestra documentación clara y útil. Por favor, ayúdenos a entender lo que necesita.
+
+  - type: textarea
+    id: what-needed
+    attributes:
+      label: "📝 ¿Qué documentación se necesita?"
+      description: "Describa qué necesita ser documentado o actualizado"
+      placeholder: "Ejemplo: Cómo usar el nuevo formulario de contacto, Instrucciones de configuración para integración de API..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-gaps
+    attributes:
+      label: "🔍 Vacíos en la Documentación Actual"
+      description: "¿Qué falta o no está claro en la documentación actual?"
+      placeholder: "La documentación actual no explica cómo..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🎯 Nivel de Prioridad"
+      description: "¿Qué tan urgente es esta necesidad de documentación?"
+      options:
+        - "🔥 p0-crítico - Requiere atención inmediata"
+        - "🚨 p1-urgente - Atender lo antes posible"
+        - "⚡ p2-alto - Planear atender pronto"
+        - "📊 p3-medio - Atender en el sprint actual"
+        - "📫 p4-bajo - Atender cuando sea posible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Tipo de Documentación"
+      description: "¿Qué tipo de documentación es?"
+      options:
+        - "🎯 core - Documentación de funcionalidad principal"
+        - "🎨 ui-ux - Guías de interfaz de usuario"
+        - "🌐 api - Documentación de API"
+        - "📱 mobile - Guías específicas para móviles"
+        - "🔧 configuration - Guías de configuración y setup"
+    validations:
+      required: true
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Información de Contacto"
+      description: "¿Cómo podemos contactarle si necesitamos aclaraciones?"
+      placeholder: "ej. correo@ejemplo.com"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Su solicitud de documentación será revisada y priorizada por nuestro equipo.
+        Nos pondremos en contacto si necesitamos información adicional.

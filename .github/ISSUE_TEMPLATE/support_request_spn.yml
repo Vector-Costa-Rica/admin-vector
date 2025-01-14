@@ -1,0 +1,85 @@
+name: "🇨🇷 🆘 Solicitud de Soporte"
+description: "Solicitar ayuda o asistencia técnica"
+title: "[Soporte]: "
+labels: ["🛠️ help-wanted", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🆘 ¡Gracias por contactarnos!
+        Estamos aquí para ayudar. Por favor, bríndenos información sobre su problema.
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: "❓ ¿En qué necesita ayuda?"
+      description: "Por favor, describa qué está tratando de hacer y dónde está teniendo problemas"
+      placeholder: "Estoy teniendo problemas con..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: "📝 Situación Actual"
+      description: "¿Qué está sucediendo actualmente?"
+      placeholder: "Cuando intento... esto sucede..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🎯 Nivel de Prioridad"
+      description: "¿Qué tan urgente es esta solicitud de soporte?"
+      options:
+        - "🔥 p0-crítico - Sistema/Servicio caído"
+        - "🚨 p1-urgente - Trabajo bloqueado"
+        - "⚡ p2-alto - Impacto significativo"
+        - "📊 p3-medio - Impacto moderado"
+        - "📫 p4-bajo - Impacto menor"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Categoría de Soporte"
+      description: "¿En qué área necesita ayuda?"
+      options:
+        - "🎯 core - Funcionalidad principal"
+        - "🎨 ui-ux - Interfaz de usuario"
+        - "🌐 api - Integración de API"
+        - "💾 database - Problemas de base de datos"
+        - "🔧 configuration - Configuración/Setup"
+        - "📱 mobile - Aplicación móvil"
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "📸 Capturas de Pantalla"
+      description: "Si es posible, agregue capturas de pantalla para explicar su problema"
+      placeholder: "Arrastre y suelte las imágenes aquí"
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Información de Contacto"
+      description: "¿Cómo podemos contactarle para preguntas de seguimiento?"
+      placeholder: "ej. correo@ejemplo.com"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Nuestro equipo de soporte revisará su solicitud y responderá lo antes posible.
+        Agradecemos su paciencia.

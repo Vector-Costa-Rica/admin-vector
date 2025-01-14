@@ -1,32 +1,85 @@
-name: Support Request
-description: Request help or troubleshooting assistance
-title: "[SUPPORT] "
-labels: ["support"]
+name: "🇺🇸 🆘 Support Request"
+description: "Request help or troubleshooting assistance"
+title: "[Support]: "
+labels: ["🛠️ help-wanted", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
 body:
   - type: markdown
     attributes:
       value: |
-        **What do you need help with?**
-        Provide a clear and concise description of the problem.
+        # 🆘 Thank you for reaching out!
+        We're here to help. Please provide us with information about your issue.
 
   - type: textarea
-    id: details
+    id: problem-description
     attributes:
-      label: Details
-      description: Add relevant details or context for the support request.
+      label: "❓ What do you need help with?"
+      description: "Please describe what you're trying to do and where you're stuck"
+      placeholder: "I'm having trouble with..."
+    validations:
+      required: true
 
-  - type: input
-    id: system_info
+  - type: textarea
+    id: current-behavior
     attributes:
-      label: Affected System
-      description: Specify the system or area affected (e.g., database, UI, API).
+      label: "📝 Current Situation"
+      description: "What's currently happening?"
+      placeholder: "When I try to... this happens..."
+    validations:
+      required: true
 
   - type: dropdown
-    id: urgency
+    id: priority
     attributes:
-      label: Urgency
-      description: How quickly do you need assistance?
+      label: "🎯 Priority Level"
+      description: "How urgent is this support request?"
       options:
-        - High
-        - Medium
-        - Low
+        - "🔥 p0-critical - System/Service is down"
+        - "🚨 p1-urgent - Work is blocked"
+        - "⚡ p2-high - Significant impact"
+        - "📊 p3-medium - Moderate impact"
+        - "📫 p4-low - Minor impact"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Support Category"
+      description: "What area do you need help with?"
+      options:
+        - "🎯 core - Core functionality"
+        - "🎨 ui-ux - User interface"
+        - "🌐 api - API integration"
+        - "💾 database - Database issues"
+        - "🔧 configuration - Setup/Configuration"
+        - "📱 mobile - Mobile app"
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "📸 Screenshots"
+      description: "If applicable, add screenshots to help explain your problem"
+      placeholder: "Drag and drop images here"
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Contact Details"
+      description: "How can we best reach you for follow-up questions?"
+      placeholder: "ex. email@example.com"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Our support team will review your request and respond as soon as possible.
+        We appreciate your patience.

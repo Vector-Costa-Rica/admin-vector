@@ -1,0 +1,84 @@
+name: "🇨🇷 ✨ Solicitud de Función"
+description: "Sugerir una nueva función o mejora"
+title: "[Función]: "
+labels: ["🔄 enhancement", "📋 triage"]
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # ✨ ¡Gracias por su sugerencia!
+        Ayúdenos a entender su idea para mejorar nuestro servicio.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: "💡 ¿Cuál es su idea?"
+      description: "Describa la nueva función o mejora que le gustaría ver"
+      placeholder: "Me gustaría ver..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: "🎯 Beneficios"
+      description: "¿Qué valor agregaría esta función?"
+      placeholder: "Esta función ayudaría a..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🎯 Nivel de Prioridad"
+      description: "¿Qué tan importante es esta función?"
+      options:
+        - "🔥 p0-crítico - Requiere atención inmediata"
+        - "🚨 p1-urgente - Atender lo antes posible"
+        - "⚡ p2-alto - Planear atender pronto"
+        - "📊 p3-medio - Atender en el sprint actual"
+        - "📫 p4-bajo - Atender cuando sea posible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Categoría de la Función"
+      description: "¿Qué área mejoraría esta función?"
+      options:
+        - "🎯 core - Mejora de funcionalidad principal"
+        - "🎨 ui-ux - Mejora de interfaz de usuario"
+        - "⚡ performance - Mejora de rendimiento"
+        - "🔒 security - Función de seguridad"
+        - "📱 mobile - Función específica para móviles"
+    validations:
+      required: true
+
+  - type: input
+    id: related_issues
+    attributes:
+      label: "🔗 Issues Relacionados"
+      description: "Enlaces a issues o discusiones relacionadas"
+      placeholder: "#123, #456"
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Información de Contacto"
+      description: "¿Cómo podemos contactarle si necesitamos aclaraciones?"
+      placeholder: "ej. correo@ejemplo.com"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Nuestro equipo revisará su solicitud y la agregará a nuestro backlog.
+        Nos pondremos en contacto si necesitamos información adicional.
