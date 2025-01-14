@@ -1,12 +1,4 @@
 [phases.setup]
-nixPkgs = [
-    'php82',
-    'php82Extensions.pdo',
-    'php82Extensions.pdo_mysql',
-    'php82Extensions.sodium',
-    'nodejs_20',
-    'composer'
-]
 cmds = [
     "mkdir -p public/build/assets",
     "chmod -R 775 public/build",
