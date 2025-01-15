@@ -144,25 +144,14 @@ class Saml2Controller extends Controller
                 'all_params' => $request->all()
             ]);
 
-            // Agregar el token CSRF a la sesión
-            if ($request->has('RelayState')) {
-                $relayState = $request->input('RelayState');
-                if (str_contains($relayState, '_token=')) {
-                    parse_str(parse_url($relayState, PHP_URL_QUERY), $params);
-                    if (isset($params['_token'])) {
-                        $request->session()->put('_token', $params['_token']);
-                    }
-                }
-            }
+            // Desactivar la verificación CSRF solo para esta petición
+            $request->session()->forget('_token');
+            session()->forget('_token');
 
             if (!$request->has('SAMLResponse')) {
                 Log::error('No SAMLResponse encontrada');
                 throw new Exception('No se recibió respuesta SAML');
             }
-
-            // Decodificar y registrar la respuesta SAML para debugging
-            $samlResponse = base64_decode($request->input('SAMLResponse'));
-            Log::debug('SAMLResponse decodificada', ['response' => $samlResponse]);
 
             $auth = $this->getSaml2Auth();
 
@@ -233,19 +222,16 @@ class Saml2Controller extends Controller
 
                 Auth::login($user);
 
-                // Obtener la URL de retorno del RelayState o usar la ruta home por defecto
-                $returnTo = $request->input('RelayState') ?? route('home');
+                // Generar un nuevo token CSRF después del login
+                $token = csrf_token();
+                $request->session()->put('_token', $token);
 
-                // Limpiar cualquier parámetro de token de la URL de retorno
-                $returnTo = preg_replace('/[\?&]_token=[^&]+/', '', $returnTo);
-
-                Log::info('Login exitoso - redirigiendo', [
+                Log::info('Login exitoso', [
                     'user_id' => $user->id,
-                    'email' => $user->email,
-                    'returnTo' => $returnTo
+                    'email' => $user->email
                 ]);
 
-                return redirect()->intended($returnTo);
+                return redirect()->intended(route('home'));
 
             } catch (Exception $e) {
                 Log::error('Error creando/actualizando usuario', [
