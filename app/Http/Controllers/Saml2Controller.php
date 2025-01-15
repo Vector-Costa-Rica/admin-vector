@@ -31,16 +31,21 @@ class Saml2Controller extends Controller
 
             $auth = $this->getSaml2Auth();
 
-            // Log de la URL de retorno
-            $returnTo = route('home');
+            // Agregar el token CSRF a la URL de retorno
+            $returnTo = route('home') . '?_token=' . csrf_token();
             Log::debug('URL de retorno configurada', ['returnTo' => $returnTo]);
 
-            // Usar el método login con los parámetros correctos para v3
-            try {
-                $loginRedirect = $auth->login($returnTo, [], true, false);
-                Log::debug('URL de login generada', ['loginUrl' => $loginRedirect]);
+            // Configurar parámetros adicionales para el login
+            $parameters = [
+                'RelayState' => $returnTo,
+                'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+            ];
 
-                return redirect()->away($loginRedirect);
+            try {
+                $loginUrl = $auth->login($returnTo, $parameters, false, false, true);
+                Log::debug('URL de login generada', ['loginUrl' => $loginUrl]);
+
+                return redirect()->away($loginUrl);
             } catch (\Exception $e) {
                 Log::error('Error generando URL de login', [
                     'error' => $e->getMessage(),
