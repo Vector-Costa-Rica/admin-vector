@@ -32,7 +32,6 @@ use Symfony\Component\HttpFoundation\Request as RequestAlias;
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         // ... otros providers
-        //App\Providers\Saml2ServiceProvider::class,
         App\Providers\SAML2ServiceProvider::class,
     ])
     ->withRouting(

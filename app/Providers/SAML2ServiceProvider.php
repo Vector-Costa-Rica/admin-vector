@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
+use Exception;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
 use Aacotroneo\Saml2\Events\Saml2LoginEvent;
 use App\Models\User;
 
@@ -24,49 +24,28 @@ class SAML2ServiceProvider extends ServiceProvider
                 $messageId = $event->getSaml2Auth()->getLastMessageId();
                 Log::debug('SAML Login Event', ['messageId' => $messageId]);
 
-                $samlUser = $event->getSaml2User();
+                $user = $event->getSaml2User();
+                $email = $user->getUserId();
 
-                Log::debug('SAML User Attributes', [
-                    'attributes' => $samlUser->getAttributes(),
-                    'userId' => $samlUser->getUserId()
-                ]);
-
-                $email = $samlUser->getUserId();
-                // Verificar que el email termine en @vectorcr.com
                 if (!str_ends_with($email, '@vectorcr.com')) {
-                    Log::warning('Intento de acceso con correo no autorizado', ['email' => $email]);
-                    throw new \Exception('Solo se permite el acceso con correo de Vector');
+                    throw new Exception('Solo se permite el acceso con correo de Vector');
                 }
 
-                // Obtener el nombre del usuario de los atributos SAML
-                $name = $this->getValue($samlUser->getAttribute('displayname')) ??
-                    $this->getValue($samlUser->getAttribute('http://schemas.microsoft.com/identity/claims/displayname')) ??
-                    $this->getValue($samlUser->getAttribute('name')) ??
+                $attributes = $user->getAttributes();
+                Log::debug('SAML User Attributes', ['attributes' => $attributes]);
+
+                $name = $attributes['displayname'][0] ??
+                    $attributes['http://schemas.microsoft.com/identity/claims/displayname'][0] ??
                     explode('@', $email)[0];
 
-                // Crear o actualizar el usuario
                 $user = User::updateOrCreate(
                     ['email' => $email],
-                    [
-                        'name' => $name,
-                        'password' => Hash::make(str_random(32))
-                    ]
+                    ['name' => $name]
                 );
-
-                Log::debug('Usuario creado/actualizado', [
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                    'name' => $user->name
-                ]);
 
                 Auth::login($user);
 
-                Log::info('Login SAML exitoso', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
-                ]);
-
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error('Error en SAML Login Event', [
                     'message' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
@@ -74,10 +53,5 @@ class SAML2ServiceProvider extends ServiceProvider
                 throw $e;
             }
         });
-    }
-
-    protected function getValue($attribute)
-    {
-        return is_array($attribute) ? ($attribute[0] ?? null) : $attribute;
     }
 }

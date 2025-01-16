@@ -18,7 +18,7 @@ return $settings = array(
     // or unencrypted messages if it expects them signed or encrypted
     // Also will reject the messages if not strictly follow the SAML
     // standard: Destination, NameId, Conditions ... are validated too.
-    'strict' => true, //@todo: make this depend on laravel config
+    'strict' => false, //@todo: make this depend on laravel config
 
     // Enable debug mode (to print errors)
     'debug' => env('APP_DEBUG', false),
@@ -33,12 +33,12 @@ return $settings = array(
 
         // Usually x509cert and privateKey of the SP are provided by files placed at
         // the certs folder. But we can also provide them with the following parameters
-        'x509cert' => env('SAML2_SP_x509_CERT', ''),
-        'privateKey' => env('SAML2_SP_PRIVATE_KEY', ''),
+        'x509cert' => env('SAML2_SP_x509_CERT'),
+        'privateKey' => env('SAML2_SP_PRIVATE_KEY'),
 
         // Identifier (URI) of the SP entity.
         // Leave blank to use the '{idpName}_metadata' route, e.g. 'test_metadata'.
-        'entityId' => env('SAML2_SP_ENTITY_ID', 'https://vectoradminapp.vectorcr.com'),
+        'entityId' => 'https://vectoradminapp.vectorcr.com',
 
         // Specifies info about where and how the <AuthnResponse> message MUST be
         // returned to the requester, in this case our SP.
@@ -46,8 +46,7 @@ return $settings = array(
             // URL Location where the <Response> from the IdP will be returned,
             // using HTTP-POST binding.
             // Leave blank to use the '{idpName}_acs' route, e.g. 'test_acs'
-            'url' => env('SAML2_SP_ACS_URL', 'https://vectoradminapp.vectorcr.com/auth/saml2/callback'),
-            'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+            'url' => 'https://vectoradminapp.vectorcr.com/auth/saml2/aad/acs',
             ),
         // Specifies info about where and how the <Logout Response> message MUST be
         // returned to the requester, in this case our SP.
@@ -56,30 +55,28 @@ return $settings = array(
             // URL Location where the <Response> from the IdP will be returned,
             // using HTTP-Redirect binding.
             // Leave blank to use the '{idpName}_sls' route, e.g. 'test_sls'
-            'url' => env('SAML2_SP_SLS_URL', 'https://vectoradminapp.vectorcr.com/auth/saml2/logout'),
-            'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+            'url' => 'https://vectoradminapp.vectorcr.com/auth/saml2/aad/logout',
         ),
     ),
 
     // Identity Provider Data that we want connect with our SP
     'idp' => array(
         // Identifier of the IdP entity  (must be a URI)
-        'entityId' => env('SAML2_IDP_ENTITY_ID', 'https://sts.windows.net/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/'),        // SSO endpoint info of the IdP. (Authentication Request protocol)
+        'entityId' => 'https://sts.windows.net/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/',
+        // SSO endpoint info of the IdP. (Authentication Request protocol)
         'singleSignOnService' => array(
             // URL Target of the IdP where the SP will send the Authentication Request Message,
             // using HTTP-Redirect binding.
-            'url' => env('SAML2_IDP_SSO_URL', 'https://login.microsoftonline.com/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/saml2'),
-            'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+            'url' => 'https://login.microsoftonline.com/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/saml2',
             ),
         // SLO endpoint info of the IdP.
         'singleLogoutService' => array(
             // URL Location of the IdP where the SP will send the SLO Request,
             // using HTTP-Redirect binding.
-            'url' => env('SAML2_IDP_SL_URL', 'https://login.microsoftonline.com/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/saml2'),
-            'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+            'url' => 'https://login.microsoftonline.com/f099ade2-d6df-4bf1-ac6c-55e770cd4d90/saml2',
             ),
         // Public x509 certificate of the IdP
-        'x509cert' => env('SAML2_IDP_x509_CERT', ''),
+        'x509cert' => env('SAML2_IDP_x509_CERT'),
         /*
          *  Instead of use the whole x509cert you can use a fingerprint
          *  (openssl x509 -noout -fingerprint -in "idp.crt" to generate it)
@@ -146,7 +143,6 @@ return $settings = array(
         'requestedAuthnContext' => true,
 
         'relaxDestinationValidation' => true,
-        'destinationStrictlyMatches' => false
     ),
 
     // Contact information template, it is recommended to suply a technical and support contacts
