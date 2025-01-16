@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use Exception;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Aacotroneo\Saml2\Events\Saml2LoginEvent;
+use Slides\Saml2\Events\SignedIn;
+use Slides\Saml2\Events\SignedOut;
 use App\Models\User;
 
 class SAML2ServiceProvider extends ServiceProvider
@@ -19,19 +19,19 @@ class SAML2ServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Event::listen(Saml2LoginEvent::class, function (Saml2LoginEvent $event) {
+        Event::listen(SignedIn::class, function (SignedIn $event) {
             try {
-                $messageId = $event->getSaml2Auth()->getLastMessageId();
+                $messageId = $event->getAuth()->getLastMessageId();
                 Log::debug('SAML Login Event', ['messageId' => $messageId]);
 
-                $user = $event->getSaml2User();
-                $email = $user->getUserId();
+                $samlUser = $event->getSaml2User();
+                $email = $samlUser->getUserId();
 
                 if (!str_ends_with($email, '@vectorcr.com')) {
-                    throw new Exception('Solo se permite el acceso con correo de Vector');
+                    throw new \Exception('Solo se permite el acceso con correo de Vector');
                 }
 
-                $attributes = $user->getAttributes();
+                $attributes = $samlUser->getAttributes();
                 Log::debug('SAML User Attributes', ['attributes' => $attributes]);
 
                 $name = $attributes['displayname'][0] ??
@@ -45,13 +45,24 @@ class SAML2ServiceProvider extends ServiceProvider
 
                 Auth::login($user);
 
-            } catch (Exception $e) {
+                Log::info('Usuario autenticado correctamente', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+
+            } catch (\Exception $e) {
                 Log::error('Error en SAML Login Event', [
                     'message' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
                 throw $e;
             }
+        });
+
+        Event::listen(SignedOut::class, function (SignedOut $event) {
+            Auth::logout();
+            session()->save();
+            Log::info('Usuario cerró sesión');
         });
     }
 }

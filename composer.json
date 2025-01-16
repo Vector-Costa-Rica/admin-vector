@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "ext-dom": "*",
-        "aacotroneo/laravel-saml2": "^2.1",
+        "24slides/laravel-saml2": "^2.4",
         "jeroennoten/laravel-adminlte": "^3.14",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
