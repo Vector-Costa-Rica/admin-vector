@@ -136,22 +136,42 @@ class Saml2Controller extends Controller
     public function acs(Request $request): Application|Redirector|RedirectResponse
     {
         try {
-            Log::debug('Recibiendo respuesta SAML en ACS', [
+            Log::debug('Iniciando ACS - Request completo', [
                 'method' => $request->method(),
                 'url' => $request->fullUrl(),
                 'headers' => $request->headers->all(),
                 'has_saml_response' => $request->has('SAMLResponse'),
-                'all_params' => $request->all()
+                'all_inputs' => $request->all(),
+                'cookies' => $request->cookies->all(),
+                'session_id' => $request->session()->getId(),
+                'session_token' => $request->session()->token()
             ]);
 
-            // Desactivar la verificación CSRF solo para esta petición
+            // Verificar el estado de la sesión
+            Log::debug('Estado de la sesión', [
+                'has_session' => $request->hasSession(),
+                'is_started' => $request->session()->isStarted(),
+                'all_session' => $request->session()->all()
+            ]);
+
+            // Desactivar verificación CSRF para esta petición
             $request->session()->forget('_token');
             session()->forget('_token');
 
+            Log::debug('Sesión después de olvidar token', [
+                'session_data' => $request->session()->all()
+            ]);
+
             if (!$request->has('SAMLResponse')) {
-                Log::error('No SAMLResponse encontrada');
+                Log::error('No SAMLResponse encontrada en la petición');
                 throw new Exception('No se recibió respuesta SAML');
             }
+
+            // Decodificar y registrar la respuesta SAML para debugging
+            $samlResponse = base64_decode($request->input('SAMLResponse'));
+            Log::debug('SAMLResponse decodificada', [
+                'response' => $samlResponse
+            ]);
 
             $auth = $this->getSaml2Auth();
 
@@ -178,7 +198,8 @@ class Saml2Controller extends Controller
             if (!empty($errors)) {
                 Log::error('Errores SAML encontrados', [
                     'errors' => $errors,
-                    'lastError' => $auth->getLastErrorReason()
+                    'lastError' => $auth->getLastErrorReason(),
+                    'lastResponse' => $auth->getLastResponseXML()
                 ]);
                 throw new Exception('Error SAML: ' . implode(', ', $errors));
             }
@@ -222,13 +243,13 @@ class Saml2Controller extends Controller
 
                 Auth::login($user);
 
-                // Generar un nuevo token CSRF después del login
+                // Generar nuevo token CSRF
                 $token = csrf_token();
                 $request->session()->put('_token', $token);
 
-                Log::info('Login exitoso', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
+                Log::debug('Estado final de la sesión', [
+                    'session_data' => $request->session()->all(),
+                    'new_token' => $token
                 ]);
 
                 return redirect()->intended(route('home'));
