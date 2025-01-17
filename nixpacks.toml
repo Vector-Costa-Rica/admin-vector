@@ -3,13 +3,8 @@ cmds = [
     "mkdir -p public/build/assets",
     "chmod -R 775 public/build",
     "ls -la public/build",
-    # Asegura que la carpeta de destino exista
     "mkdir -p /app/storage/app/certs",
-
-    # Verifica que la carpeta contenga el archivo después de copiarlo
-    "ls -la /app/storage/app/certs",
-
-    # Asegura que los permisos del archivo sean correctos
+    "mkdir -p /app/vendor/onelogin/php-saml",
     "chmod -R 755 /app/storage/app/certs/azure_ad_public_cert.cer"
 ]
 
