@@ -46,3 +46,5 @@ Thumbs.db
 .idea/
 .vscode/
 *.sublime-workspace
+
+!storage/app/certs/azure_ad_public_cert.cer

@@ -1,6 +1,5 @@
 <?php
 
-use Aacotroneo\Saml2\Saml2Auth;
 use App\Http\Middleware\{EncryptCookies,
     VerifyCsrfToken};
 use Illuminate\Session\Middleware\StartSession;
@@ -17,20 +16,22 @@ use App\Http\Controllers\{AssetsController,
     ProjectStatesController,
     ProposalsController,
     CustomAssetsController,
-    Saml2Controller,
     ServicesController,
     StatesController,
     TechDocsController,
     ClientDocsController,
     ReportsController,
     OperationalDocsController,
-    RatesController};
+    RatesController,
+    SamlController};
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-
+Route::get('saml/login', [SamlController::class, 'login'])->name('saml.login');
+Route::post('saml/acs', [SamlController::class, 'acs'])->name('saml.acs');
+Route::get('saml/logout', [SamlController::class, 'logout'])->name('saml.logout');
 
 
 Route::middleware('auth')->group(function () {
