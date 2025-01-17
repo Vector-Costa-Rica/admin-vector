@@ -9,9 +9,6 @@ cmds = [
     # Verifica que la carpeta contenga el archivo después de copiarlo
     "ls -la /app/storage/app/certs",
 
-    # Copia el archivo del certificado desde el repositorio al contenedor
-    "cp storage/app/certs/azure_ad_public_cert.cer /app/storage/app/certs/azure_ad_public_cert.cer",
-
     # Asegura que los permisos del archivo sean correctos
     "chmod -R 755 /app/storage/app/certs/azure_ad_public_cert.cer"
 ]
