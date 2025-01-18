@@ -79,11 +79,11 @@ body:
   - type: textarea
     id: impact
     attributes:
-      label: "📊 Potential Impact"
-      description: "What could be the expected impact of this refactor?"
-      placeholder: "Improved performance, better maintainability, etc."
-      validations:
-        required: true
+       label: "📊 Potential Impact"
+       description: "What could be the expected impact of this refactor?"
+       placeholder: "Improved performance, better maintainability, etc."
+    validations:
+       required: true
 
   - type: input
     id: contact
