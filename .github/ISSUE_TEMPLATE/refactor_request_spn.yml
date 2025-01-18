@@ -1,0 +1,102 @@
+name: "🇺🇸 🔄 Refactoring Request"
+description: "Request to refactor or improve a specific part of the project"
+title: "[Refactor]: "
+labels:
+  - "🔄 enhancement"
+  - "⚡ performance"
+  - "🎯 core"
+  - "📋 triage"
+  - "⚙️ in-development"
+  - "🎨 design-needed"
+  - "🐜 size-xs"
+  - "🦗 size-s"
+  - "🐇 size-m"
+  - "🦊 size-l"
+  - "🦌 size-xl"
+  - "🆘 help-wanted"
+  - "👍 good-first-issue"
+assignees:
+  - vectorcr
+projects:
+  - "Vector-Costa-Rica/9" # Vector Backlog Project
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 🙏 Thank you for suggesting a refactor!
+        We appreciate your input in improving the structure and performance of our project. Please provide a brief description of the part you’d like to refactor.
+
+  - type: textarea
+    id: what-to-refactor
+    attributes:
+      label: "❓ What part needs refactoring?"
+      description: "Please describe the part of the project that requires improvement"
+      placeholder: "I think the code for... could be optimized..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: "💡 Reason for Refactor"
+      description: "Why do you think this part should be refactored?"
+      placeholder: |
+        It might be outdated...
+        It causes performance issues...
+        It's difficult to maintain...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🎯 Priority Level"
+      description: "Select the priority of this refactor request"
+      options:
+        - "🔥 p0-critical - Immediate attention required"
+        - "🚨 p1-urgent - Address as soon as possible"
+        - "⚡ p2-high - Plan to address soon"
+        - "📊 p3-medium - Address in current sprint"
+        - "📫 p4-low - Address when possible"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "🏷️ Refactor Category"
+      description: "Select the type of refactor"
+      options:
+        - "🎯 core - Core functionality improvements"
+        - "⚡ performance - Performance-related optimizations"
+        - "💻 code - Code structure and readability"
+        - "🔒 security - Security improvements"
+        - "📱 mobile - Refactor specific for mobile"
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: "📊 Potential Impact"
+      description: "What could be the expected impact of this refactor?"
+      placeholder: "Improved performance, better maintainability, etc."
+      validations:
+        required: true
+
+  - type: input
+    id: contact
+    attributes:
+      label: "📧 Contact Details"
+      description: "How can we get in touch with you if we need more info?"
+      placeholder: "ex. email@example.com"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        📋 Your request will be reviewed by our team and added to our backlog.
+        We'll contact you if additional information is needed.

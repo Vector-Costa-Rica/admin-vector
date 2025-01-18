@@ -8,7 +8,7 @@ on:
       process_existing:
         description: "Process existing issues"
         required: true
-        default: "false"
+        default: false
         type: boolean
 
 jobs:
