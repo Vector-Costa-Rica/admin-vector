@@ -1,6 +1,6 @@
-name: "🇨🇷 🔄 Solicitud de Refactorización"
-description: "Solicitud para refactorizar o mejorar una parte específica del proyecto"
-title: "[Refactorizar]: "
+name: "🇺🇸 🔄 Refactoring Request"
+description: "Request to refactor or improve a specific part of the project"
+title: "[Refactor]: "
 labels:
   - "🔄 enhancement"
   - "⚡ performance"
@@ -24,73 +24,73 @@ body:
   - type: markdown
     attributes:
       value: |
-        # 🙏 ¡Gracias por sugerir una refactorización!
-        Agradecemos su contribución para mejorar la estructura y el rendimiento de nuestro proyecto. Por favor, bríndenos una breve descripción de la parte que desea refactorizar.
+        # 🙏 Thank you for suggesting a refactor!
+        We appreciate your input in improving the structure and performance of our project. Please provide a brief description of the part you’d like to refactor.
 
   - type: textarea
     id: what-to-refactor
     attributes:
-      label: "❓ ¿Qué parte necesita refactorización?"
-      description: "Describa la parte del proyecto que requiere mejora"
-      placeholder: "Creo que el código de... podría ser optimizado..."
+      label: "❓ What part needs refactoring?"
+      description: "Please describe the part of the project that requires improvement"
+      placeholder: "I think the code for... could be optimized..."
     validations:
       required: true
 
   - type: textarea
     id: reason
     attributes:
-      label: "💡 Razón para la Refactorización"
-      description: "¿Por qué cree que esta parte debe ser refactorizada?"
+      label: "💡 Reason for Refactor"
+      description: "Why do you think this part should be refactored?"
       placeholder: |
-        Podría estar desactualizado...
-        Causa problemas de rendimiento...
-        Es difícil de mantener...
+        It might be outdated...
+        It causes performance issues...
+        It's difficult to maintain...
     validations:
       required: true
 
   - type: dropdown
     id: priority
     attributes:
-      label: "🎯 Nivel de Prioridad"
-      description: "Seleccione la prioridad de esta solicitud de refactorización"
+      label: "🎯 Priority Level"
+      description: "Select the priority of this refactor request"
       options:
-        - "🔥 p0-crítico - Requiere atención inmediata"
-        - "🚨 p1-urgente - Atender lo antes posible"
-        - "⚡ p2-alto - Planear atender pronto"
-        - "📊 p3-medio - Atender en el sprint actual"
-        - "📫 p4-bajo - Atender cuando sea posible"
+        - "🔥 p0-critical - Immediate attention required"
+        - "🚨 p1-urgent - Address as soon as possible"
+        - "⚡ p2-high - Plan to address soon"
+        - "📊 p3-medium - Address in current sprint"
+        - "📫 p4-low - Address when possible"
     validations:
       required: true
 
   - type: dropdown
     id: category
     attributes:
-      label: "🏷️ Categoría de Refactorización"
-      description: "Seleccione el tipo de refactorización"
+      label: "🏷️ Refactor Category"
+      description: "Select the type of refactor"
       options:
-        - "🎯 core - Mejoras en funcionalidad principal"
-        - "⚡ performance - Optimización relacionada con rendimiento"
-        - "💻 code - Estructura y legibilidad del código"
-        - "🔒 security - Mejoras de seguridad"
-        - "📱 mobile - Refactorización específica para móviles"
+        - "🎯 core - Core functionality improvements"
+        - "⚡ performance - Performance-related optimizations"
+        - "💻 code - Code structure and readability"
+        - "🔒 security - Security improvements"
+        - "📱 mobile - Refactor specific for mobile"
     validations:
       required: true
 
   - type: textarea
     id: impact
     attributes:
-      label: "📊 Impacto Potencial"
-      description: "¿Cuál podría ser el impacto esperado de esta refactorización?"
-      placeholder: "Mejora en rendimiento, mejor mantenimiento, etc."
-    validations:
-      required: true
+      label: "📊 Potential Impact"
+      description: "What could be the expected impact of this refactor?"
+      placeholder: "Improved performance, better maintainability, etc."
+      validations:
+        required: true
 
   - type: input
     id: contact
     attributes:
-      label: "📧 Información de Contacto"
-      description: "¿Cómo podemos contactarle si necesitamos más información?"
-      placeholder: "ej. correo@ejemplo.com"
+      label: "📧 Contact Details"
+      description: "How can we get in touch with you if we need more info?"
+      placeholder: "ex. email@example.com"
     validations:
       required: false
 
@@ -98,5 +98,5 @@ body:
     attributes:
       value: |
         ---
-        📋 Nuestro equipo revisará su solicitud y la agregará a nuestro backlog.
-        Nos pondremos en contacto si necesitamos más información.
+        📋 Your request will be reviewed by our team and added to our backlog.
+        We'll contact you if additional information is needed.
