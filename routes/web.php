@@ -42,6 +42,7 @@ Route::prefix('auth/saml2')->group(function () {
     Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
 });
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });

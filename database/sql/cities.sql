@@ -27,7 +27,7 @@ CREATE TABLE `countries` (
   `iso` char(2) NOT NULL,
   `country_name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -54,7 +54,7 @@ CREATE TABLE `states` (
   PRIMARY KEY (`id`),
   KEY `id_country` (`id_country`),
   CONSTRAINT `states_ibfk_1` FOREIGN KEY (`id_country`) REFERENCES `countries` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +81,7 @@ CREATE TABLE `cities` (
   PRIMARY KEY (`id`),
   KEY `id_state` (`id_state`),
   CONSTRAINT `cities_ibfk_1` FOREIGN KEY (`id_state`) REFERENCES `states` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29962 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29962 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
