@@ -3,6 +3,7 @@ FROM php:8.2-fpm-alpine
 
 # Instalar dependencias del sistema
 RUN apk add --no-cache \
+    bash \
     nginx \
     supervisor \
     postgresql-dev \
