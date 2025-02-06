@@ -1,8 +1,7 @@
 <?php
 
-use Aacotroneo\Saml2\Saml2Auth;
-use App\Http\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\{EncryptCookies,
+    VerifyCsrfToken};
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AssetsController,
@@ -17,30 +16,23 @@ use App\Http\Controllers\{AssetsController,
     ProjectStatesController,
     ProposalsController,
     CustomAssetsController,
-    Saml2Controller,
     ServicesController,
     StatesController,
     TechDocsController,
     ClientDocsController,
     ReportsController,
     OperationalDocsController,
-    RatesController};
+    RatesController,
+    SamlController};
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
-Route::get('auth/saml2/metadata', [Saml2Controller::class, 'metadata'])->name('saml2.metadata');
 
+Route::get('saml/login', [SamlController::class, 'login'])->name('saml.login');
+Route::post('saml/acs', [SamlController::class, 'acs'])->name('saml.acs');
+Route::get('saml/logout', [SamlController::class, 'logout'])->name('saml.logout');
 
-Route::prefix('auth/saml2')->group(function () {
-    Route::get('login', [Saml2Controller::class, 'login'])->name('saml2.login');
-
-    Route::post('callback', [Saml2Controller::class, 'acs'])
-        ->name('saml2.acs')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-
-    Route::get('logout', [Saml2Controller::class, 'logout'])->name('saml2.logout');
-});
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
